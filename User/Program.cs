@@ -1,5 +1,15 @@
+using Microsoft.EntityFrameworkCore;
+using UserService.Data;
+using UserService.Service;
+
 var builder = WebApplication.CreateBuilder(args);
 
+
+builder.Services.AddDbContext<MyDBContext>(options =>
+{
+    options.UseSqlServer(builder.Configuration.GetConnectionString("MyDBUser"));
+});
+builder.Services.AddScoped<IUsers, UsersService>();
 // Add services to the container.
 
 builder.Services.AddControllers();
