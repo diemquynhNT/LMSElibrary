@@ -51,32 +51,30 @@ namespace UserService.Controllers
             }
         }
 
-        //[HttpGet]
-        //public async Task<IActionResult> getimg([FromRoute] string imgname)
-        //{
-        //    string path = _webHostEnvironment.WebRootPath + "\\uploads\\";
-        //    var filePath = path + imgname + ".png";
-        //    if(System.IO.File.Exists(filePath))
-        //    {
-        //        byte[]b=System.IO.File.ReadAllBytes(filePath);
-        //        return File(b, "image/png");
+        [HttpGet]
+        public IActionResult getimg([FromRoute] string imgname)
+        {
+            string path = _webHostEnvironment.WebRootPath + "\\uploads\\";
+            var filePath = path + imgname + ".png";
+            if (System.IO.File.Exists(filePath))
+            {
+                byte[] imageBytes = System.IO.File.ReadAllBytes(filePath);
+                string mimeType = "image/png";
+                return File(imageBytes, mimeType);
 
-        //    }
-        //    return null;
+            }
+            return BadRequest();
+           
 
-        //}
-        //[HttpGet]
-        //public IActionResult GetImage(string id)
-        //{
+        }
+        [HttpGet]
+        public IActionResult GetImage(string id)
+        {
 
-        //    byte[] imageBytes = iuser.GetImage(id);
-
-        //    // Thiết lập kiểu MIME
-        //    string mimeType = "image/png";
-
-        //    // Trả về hình ảnh dưới dạng một phản hồi HTTP
-        //    return File(imageBytes, mimeType);
-        //}
+            byte[] imageBytes = iuser.GetImage(id);
+            string mimeType = "image/png";
+            return File(imageBytes, mimeType);
+        }
 
 
         [HttpGet("listuser")]

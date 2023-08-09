@@ -89,7 +89,6 @@ namespace UserService.Service
 
         public async Task<IEnumerable<Users>> GetAllUsers()
         {
-
             return await _context.users.ToListAsync();
         }
 
