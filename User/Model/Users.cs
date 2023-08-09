@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Http;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace UserService.Model
@@ -10,6 +11,7 @@ namespace UserService.Model
         public string IdUser { get; set; }
         [Required]
         [MaxLength(100)]
+
         public string Nameus { get; set; }
         [Required]
         [EmailAddress]
@@ -37,6 +39,7 @@ namespace UserService.Model
         [ForeignKey("IdKhoa")]
         public Khoa khoas { get; set; }
 
+        public byte[] ImageUser { get; set; }
 
 
 

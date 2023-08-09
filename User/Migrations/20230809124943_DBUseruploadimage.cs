@@ -1,10 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
 namespace UserService.Migrations
 {
-    public partial class DBUser : Migration
+    public partial class DBUseruploadimage : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -45,7 +46,8 @@ namespace UserService.Migrations
                     Address = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     IdPos = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     IdClass = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    IdKhoa = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                    IdKhoa = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    ImageUser = table.Column<byte[]>(type: "varbinary(max)", nullable: false)
                 },
                 constraints: table =>
                 {

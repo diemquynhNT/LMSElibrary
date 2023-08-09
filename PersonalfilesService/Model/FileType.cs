@@ -5,9 +5,8 @@
        
             PDF = 1,
             DOCX = 2,
-            WORD = 3,
-            EXCEL = 4,
-            VIDEO = 5
+            EXCEL = 3,
+            VIDEO = 4
 
 
         
