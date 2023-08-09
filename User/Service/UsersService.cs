@@ -1,7 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Specialized;
 using System.IO;
+using System.Text.RegularExpressions;
 using UserService.Data;
 using UserService.Model;
 
@@ -10,14 +13,48 @@ namespace UserService.Service
     public class UsersService : IUsers
     {
         private readonly MyDBContext _context;
+        public static IWebHostEnvironment _webHostEnvironment;
 
-        public UsersService(MyDBContext context)
+        public UsersService(MyDBContext context, IWebHostEnvironment webHostEnvironment)
         {
             _context = context;
+            _webHostEnvironment = webHostEnvironment;
         }
 
-        public async Task CreateUsers(ImageUploadModel us, string idkhoa, string idpos,IFormFile ImageData)
+        public  bool ChangePassword(string userId, string newPassword,string oldPassword,string new2Password )
         {
+            var user =  _context.users.SingleOrDefault(t=>t.IdUser==userId);
+            if (user == null)
+            {
+                return false;
+            }
+            if (user.Password != oldPassword)
+                return false;
+            if (ValidatePassword(newPassword)==false)
+                return false;
+            else if( newPassword!=new2Password)
+                return false;
+            else
+            {
+                user.Password= newPassword;
+                _context.SaveChanges();
+                return true;
+
+            }
+        }
+        public bool ValidatePassword(string password)
+        {
+            
+            string passwordRegex = @"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W]).{8,}$";
+
+            bool isValid = Regex.IsMatch(password, passwordRegex);
+
+            return isValid;
+        }
+
+        public async Task CreateUsers(ImageUploadModel us, string idkhoa, string idpos)
+        {
+
             try
             {
                 Random rd = new Random();
@@ -38,17 +75,33 @@ namespace UserService.Service
                 users.Address = us.Address;
                 users.IdPos = idpos;
                 users.IdKhoa = idkhoa;
-                using (var stream = new MemoryStream())
-                    {
-                    if (stream.Length < 2097152)
-                    {
-                        ImageData.CopyTo(stream);
-                        users.ImageUser = stream.ToArray();
-                    }
-                    }
+                //using (var stream = new MemoryStream())
+                //    {
+                //    if (stream.Length < 2097152)
+                //    {
+                //        ImageData.CopyTo(stream);
+                //        users.ImageUser = stream.ToArray();
+                //    }
+                //    }
 
-                    _context.Add(users);
-                    await _context.SaveChangesAsync();
+                if (us.Users.Length > 0)
+                {
+                    string path = _webHostEnvironment.WebRootPath + "\\uploads\\";
+                    if (!Directory.Exists(path))
+                    {
+                        Directory.CreateDirectory(path);
+
+                    }
+                    using (FileStream fileStream = System.IO.File.Create(path + us.Users.FileName))
+                    {
+                        us.Users.CopyTo(fileStream);
+                        fileStream.Flush();
+                        users.ImageUser = us.Users.FileName;
+
+                    }
+                }
+                _context.Add(users);
+                await _context.SaveChangesAsync();
                    
             }
             catch (Exception)

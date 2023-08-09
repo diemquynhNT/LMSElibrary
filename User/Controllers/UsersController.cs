@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Runtime.CompilerServices;
 using UserService.Model;
 using UserService.Service;
 
@@ -19,55 +20,74 @@ namespace UserService.Controllers
             _webHostEnvironment = webHostEnvironment;
         }
 
-        [HttpPost]
-        public async Task<string> Post([FromForm] ImagesUpload imagesUpload)
-        {
-            try
-            {
-                if(imagesUpload.files.Length > 0)
-                {
-                    string path = _webHostEnvironment.WebRootPath + "\\uploads\\";
-                    if(!Directory.Exists(path))
-                    {
-                        Directory.CreateDirectory(path);
+        //[HttpPost]
+        //public async Task<string> Post([FromForm] ImagesUpload imagesUpload)
+        //{
+        //    try
+        //    {
+        //        if(imagesUpload.Users.Length > 0)
+        //        {
+        //            string path = _webHostEnvironment.WebRootPath + "\\uploads\\";
+        //            if(!Directory.Exists(path))
+        //            {
+        //                Directory.CreateDirectory(path);
 
-                    }
-                    using(FileStream fileStream=System.IO.File.Create(path+ imagesUpload.files.FileName))
-                    {
-                        imagesUpload.files.CopyTo(fileStream);
-                        fileStream.Flush();
-                        return "Upload done";
+        //            }
+        //            using(FileStream fileStream=System.IO.File.Create(path+ imagesUpload.files.FileName))
+        //            {
+        //                imagesUpload.files.CopyTo(fileStream);
+        //                fileStream.Flush();
+        //                return "Upload done";
 
-                    }    
-                }
-                else
-                {
-                    return "Failed";
-                }    
-            }
-            catch (Exception ex)
-            {
-               return "Failed";
-            }
-        }
+        //            }    
+        //        }
+        //        else
+        //        {
+        //            return "Failed";
+        //        }    
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //       return "Failed";
+        //    }
+        //}
 
-        [HttpGet]
-        public IActionResult getimg([FromRoute] string imgname)
-        {
-            string path = _webHostEnvironment.WebRootPath + "\\uploads\\";
-            var filePath = path + imgname + ".png";
-            if (System.IO.File.Exists(filePath))
-            {
-                byte[] imageBytes = System.IO.File.ReadAllBytes(filePath);
-                string mimeType = "image/png";
-                return File(imageBytes, mimeType);
 
-            }
-            return BadRequest();
+        //[HttpGet("LayHinh")]
+        //public IActionResult Get([FromRoute] string imgname)
+        //{
+        //    try
+        //    {
+        //        string path = _webHostEnvironment.WebRootPath + "\\uploads\\";
+        //        var filePath = path + imgname + ".png";
+        //        if (System.IO.File.Exists(filePath))
+        //        {
+        //            byte[] b = System.IO.File.ReadAllBytes("filePath");
+        //            return File(b, "image/png");
+        //        }
+        //        return NotFound();
+        //    }
+        //    catch(Exception ex)
+        //    {
+        //        return BadRequest("Loi");
+        //    }
            
+        //}
+        [HttpGet("LayHinh")]
+public IActionResult GetImageDemo([FromQuery] string imgname)
+{
+    string path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
+    var filePath = Path.Combine(path, imgname + ".png");
+    if (System.IO.File.Exists(filePath))
+    {
+        var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
+        return File(fileStream, "image/png");
+    }
 
-        }
-        [HttpGet]
+    return NotFound();
+}
+
+        [HttpGet("UpLoadImage")]
         public IActionResult GetImage(string id)
         {
 
@@ -112,8 +132,22 @@ namespace UserService.Controllers
             }
         }
 
-
-
+        [HttpPut("ChangePassord")]
+        public IActionResult ChangePasswordUser(string userId, string newPassword, string oldPassword, string new2Password)
+        {
+            try
+            {
+                bool check = iuser.ChangePassword(userId, newPassword, oldPassword, new2Password);
+                if (!check)
+                    return BadRequest("loi");
+                return Ok("Da doi");
+                
+            }
+            catch
+            {
+                return BadRequest("khon hop le");
+            }
+        }
         //[HttpPut("{id}")]
         //public IActionResult UploadUser([FromBody] UserModel users,string id)
         //{
@@ -146,23 +180,23 @@ namespace UserService.Controllers
 
         }
 
-        [HttpPost("upload-image")]
-        public async Task<IActionResult> UploadImage([FromForm] IFormFile imageFile)
-        {
-            if (imageFile == null)
-            {
-                return BadRequest("No image file sent");
-            }
+        //[HttpPost("upload-image")]
+        //public async Task<IActionResult> UploadImage([FromForm] IFormFile imageFile)
+        //{
+        //    if (imageFile == null)
+        //    {
+        //        return BadRequest("No image file sent");
+        //    }
 
-            try
-            {
-                string imageUrl = await iuser.UploadImage(imageFile);
-                return Ok(imageUrl);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, "An error occurred while uploading the image");
-            }
-        }
+        //    try
+        //    {
+        //        string imageUrl = await iuser.UploadImage(imageFile);
+        //        return Ok(imageUrl);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return StatusCode(500, "An error occurred while uploading the image");
+        //    }
+        //}
     }
 }

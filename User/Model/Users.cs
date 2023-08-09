@@ -39,7 +39,7 @@ namespace UserService.Model
         [ForeignKey("IdKhoa")]
         public Khoa khoas { get; set; }
 
-        public byte[] ImageUser { get; set; }
+        public string? ImageUser { get; set; }
 
 
 
