@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Net.WebSockets;
 using System.Runtime.CompilerServices;
 using UserService.Model;
 using UserService.Service;
@@ -20,6 +21,127 @@ namespace UserService.Controllers
             _webHostEnvironment = webHostEnvironment;
         }
 
+       
+        [HttpGet("GetImage")]
+        public IActionResult GetImageDemo([FromQuery] string id)
+        {
+            var fileStream = iuser.GetImageById(id);
+            if(fileStream!=null)
+                return File(fileStream, "image/png");
+            return NotFound();
+        }
+
+        //[HttpGet("UpLoadImage")]
+        //public IActionResult GetImage(string id)
+        //{
+
+        //    byte[] imageBytes = iuser.GetImage(id);
+        //    string mimeType = "image/png";
+        //    return File(imageBytes, mimeType);
+        //}
+
+
+        [HttpGet("Listuser")]
+        public Task<IEnumerable<Users>> GetAllUsers()
+        {
+            var listuserr = iuser.GetAllUsers();
+            return listuserr;
+        }
+
+      
+        [HttpGet("filterlist")]
+        public Task<Users> GetUserById (string Id)
+        {
+            var u=iuser.GetUserByid(Id);
+            return u;
+        }
+
+        [HttpPost("AddUser")]
+        public async Task<ActionResult> AddUser([FromForm] ImageUploadModel fileDetails,string idkhoa, string idpos)
+        {
+            if (fileDetails == null)
+            {
+                return BadRequest();
+            }
+
+            try
+            {
+                PositionModel us= new PositionModel();
+                await iuser.CreateUsers(fileDetails,idkhoa,idpos);
+                return Ok();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        [HttpPut("ChangePassword")]
+        public IActionResult ChangePasswordUser(string userId, string newPassword, string oldPassword, string new2Password)
+        {
+            try
+            {
+                bool check = iuser.ChangePassword(userId, newPassword, oldPassword, new2Password);
+                if (!check)
+                    return BadRequest("loi");
+                return Ok("Da doi");
+                
+            }
+            catch
+            {
+                return BadRequest("khon hop le");
+            }
+        }
+        [HttpPut("EditUser")]
+        public IActionResult EditUser(UserModel users,string id)
+        {
+            bool check = iuser.IsValidUser(id);
+            if (!check)
+            {
+                return BadRequest("Thông tin người dùng không hợp lệ");
+            }
+
+            iuser.EditUsers(users, id);
+
+            return Ok("Người dùng đã được tải lên thành công");
+        }
+
+
+        [HttpDelete("{id}")]
+        public IActionResult DeleteUser(string id)
+        {
+            try
+            {
+                iuser.DeleteUsers(id);
+                
+                return Ok();
+
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
+        }
+
+        //[HttpPost("upload-image")]
+        //public async Task<IActionResult> UploadImage([FromForm] IFormFile imageFile)
+        //{
+        //    if (imageFile == null)
+        //    {
+        //        return BadRequest("No image file sent");
+        //    }
+
+        //    try
+        //    {
+        //        string imageUrl = await iuser.UploadImage(imageFile);
+        //        return Ok(imageUrl);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return StatusCode(500, "An error occurred while uploading the image");
+        //    }
+        //}
         //[HttpPost]
         //public async Task<string> Post([FromForm] ImagesUpload imagesUpload)
         //{
@@ -71,132 +193,7 @@ namespace UserService.Controllers
         //    {
         //        return BadRequest("Loi");
         //    }
-           
-        //}
-        [HttpGet("LayHinh")]
-public IActionResult GetImageDemo([FromQuery] string imgname)
-{
-    string path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
-    var filePath = Path.Combine(path, imgname + ".png");
-    if (System.IO.File.Exists(filePath))
-    {
-        var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
-        return File(fileStream, "image/png");
-    }
 
-    return NotFound();
-}
-
-        [HttpGet("UpLoadImage")]
-        public IActionResult GetImage(string id)
-        {
-
-            byte[] imageBytes = iuser.GetImage(id);
-            string mimeType = "image/png";
-            return File(imageBytes, mimeType);
-        }
-
-
-        [HttpGet("listuser")]
-        public Task<IEnumerable<Users>> GetAllUsers()
-        {
-            var listuserr = iuser.GetAllUsers();
-            return listuserr;
-        }
-
-      
-        [HttpGet("filterlist")]
-        public Task<Users> GetUserById (string Id)
-        {
-            var u=iuser.GetUserByid(Id);
-            return u;
-        }
-
-        [HttpPost("PostUser")]
-        public async Task<ActionResult> AddUser([FromForm] ImageUploadModel fileDetails,string idkhoa, string idpos)
-        {
-            if (fileDetails == null)
-            {
-                return BadRequest();
-            }
-
-            try
-            {
-                UserModel us= new UserModel();
-                await iuser.CreateUsers(fileDetails,idkhoa,idpos,fileDetails.Users);
-                return Ok();
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-        }
-
-        [HttpPut("ChangePassord")]
-        public IActionResult ChangePasswordUser(string userId, string newPassword, string oldPassword, string new2Password)
-        {
-            try
-            {
-                bool check = iuser.ChangePassword(userId, newPassword, oldPassword, new2Password);
-                if (!check)
-                    return BadRequest("loi");
-                return Ok("Da doi");
-                
-            }
-            catch
-            {
-                return BadRequest("khon hop le");
-            }
-        }
-        //[HttpPut("{id}")]
-        //public IActionResult UploadUser([FromBody] UserModel users,string id)
-        //{
-
-        //    if (!IsValidUser(users))
-        //    {
-        //        return BadRequest("Thông tin người dùng không hợp lệ");
-        //    }
-
-        //   iuser.EditUsers(users,id);
-
-        //    return Ok("Người dùng đã được tải lên thành công");
-        //}
-
-
-        [HttpDelete("{id}")]
-        public IActionResult DeleteUser(string id)
-        {
-            try
-            {
-                iuser.DeleteUsers(id);
-                
-                return Ok();
-
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-
-        }
-
-        //[HttpPost("upload-image")]
-        //public async Task<IActionResult> UploadImage([FromForm] IFormFile imageFile)
-        //{
-        //    if (imageFile == null)
-        //    {
-        //        return BadRequest("No image file sent");
-        //    }
-
-        //    try
-        //    {
-        //        string imageUrl = await iuser.UploadImage(imageFile);
-        //        return Ok(imageUrl);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return StatusCode(500, "An error occurred while uploading the image");
-        //    }
         //}
     }
 }

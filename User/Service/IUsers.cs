@@ -12,8 +12,16 @@ namespace UserService.Service
         public Task<UserModel> EditUsers(UserModel us, string id);
         public void DeleteUsers(string id);
         Task<string> UploadImage(IFormFile imageFile);
-       public byte[] GetImage(string id);
+        public FileStream GetImageById(string id);
         public bool ChangePassword(string userId, string newPassword, string oldPassword, string new2Password);
+        public bool IsValidUser(string id);
+
+        //pos
+        public Task<IEnumerable<Position>> GetAllPost();
+        public Task<Position> GetPosById(string id);
+        public Task AddPos(PositionModel pos);
+        public Task<PositionModel> EditPos(PositionModel us, string id);
+        public void DeletePos(string id);
 
     }
 }

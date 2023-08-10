@@ -10,8 +10,9 @@ namespace UserService.Model
         [Key]
         public string IdUser { get; set; }
         [Required]
+        public bool Gender { get; set; }
+        [Required]
         [MaxLength(100)]
-
         public string Nameus { get; set; }
         [Required]
         [EmailAddress]

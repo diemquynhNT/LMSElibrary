@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Specialized;
 using System.IO;
+using System.IO.Pipes;
 using System.Text.RegularExpressions;
 using UserService.Data;
 using UserService.Model;
@@ -75,6 +76,7 @@ namespace UserService.Service
                 users.Address = us.Address;
                 users.IdPos = idpos;
                 users.IdKhoa = idkhoa;
+                users.Gender = us.Gender;
                 //using (var stream = new MemoryStream())
                 //    {
                 //    if (stream.Length < 2097152)
@@ -145,18 +147,18 @@ namespace UserService.Service
             return await _context.users.ToListAsync();
         }
 
-        public byte[] GetImage(string id)
+        public FileStream GetImageById(string id)
         {
-
-            var us = _context.users.SingleOrDefault(t => t.IdUser == id);
-            if (us != null)
+            Users users=_context.users.SingleOrDefault(t=>t.IdUser== id);
+            string path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
+            var filePath = Path.Combine(path, users.ImageUser);
+            if (System.IO.File.Exists(filePath))
             {
-                byte[] imageBytes = us.ImageUser;
-
-                return imageBytes;
+                var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
+                return fileStream;
             }
             return null;
-            
+
         }
 
         public async Task<Users> GetUserByid(string id)
@@ -182,6 +184,61 @@ namespace UserService.Service
             }
 
             return filePath;
+        }
+
+        public bool IsValidUser(string id)
+        {
+           Users users=_context.users.SingleOrDefault(t=>t.IdUser == id);
+            if (users == null)
+                return false;
+            return true;
+        }
+
+       
+        //pos
+        public async Task<IEnumerable<Position>> GetAllPost()
+        {
+            return await _context.positions.ToListAsync();
+        }
+
+        public async Task<Position> GetPosById(string id)
+        {
+            return await _context.positions.Where(x => x.IdPos == id).FirstOrDefaultAsync();
+        }
+
+        public async Task AddPos(PositionModel pos)
+        {
+            Position p = new Position();
+            p.NamePos = pos.NamePos;
+            p.Mota=pos.Mota;
+            _context.Add(p);
+            await _context.SaveChangesAsync();
+
+        }
+
+        public async Task<PositionModel> EditPos(PositionModel p, string id)
+        {
+            var position = _context.positions.SingleOrDefault(t => t.IdPos == id);
+            if (position == null)
+                return null;
+            position.Mota = p.Mota;
+            position.NamePos = p.NamePos;
+            _context.Add(position);
+            await _context.SaveChangesAsync();
+            return p;
+           
+
+        }
+
+        public void DeletePos(string id)
+        {
+            var pos = _context.positions.SingleOrDefault(t => t.IdPos == id);
+            if (pos != null)
+            {
+                _context.Remove(pos);
+                _context.SaveChanges();
+            }
+            
         }
     }
     }

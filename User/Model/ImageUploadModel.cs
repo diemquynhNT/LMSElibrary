@@ -6,6 +6,8 @@ namespace UserService.Model
     {
         public IFormFile Users { get; set; }
         [Required]
+        public bool Gender { get; set; }
+        [Required]
         [MaxLength(100)]
         public string Nameus { get; set; }
         [Required]

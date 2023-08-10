@@ -11,6 +11,7 @@ namespace UserService.Model
         [Required]
         [MaxLength(100)]
         public string NamePos { get; set; }
+        public string Mota { get; set; }
 
         public virtual ICollection<Users> users { get; set; }
     }
