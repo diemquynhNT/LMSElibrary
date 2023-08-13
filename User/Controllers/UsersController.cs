@@ -124,6 +124,40 @@ namespace UserService.Controllers
 
         }
 
+        [HttpPost("Login")]
+        public IActionResult Validate(LoginModel model)
+        {
+            try
+            {
+                var user = _context.NguoiDungs.SingleOrDefault(p => p.UserName == model.UserName
+            && model.Passworduser == p.Passworduser);
+
+                if (user == null)
+                {
+                    return Ok(new
+                    {
+                        Success = false,
+                        Message = "Invalid user/pass"
+                    });
+                }
+
+
+
+                return Ok(new
+                {
+                    Success = true,
+                    Message = "Authentication success",
+                    Data = GenerateToken(user)
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            
+        }
+
+
         //[HttpPost("upload-image")]
         //public async Task<IActionResult> UploadImage([FromForm] IFormFile imageFile)
         //{

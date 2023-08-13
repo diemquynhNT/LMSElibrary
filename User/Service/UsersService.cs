@@ -1,10 +1,10 @@
-﻿using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
+﻿
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Specialized;
-using System.IO;
-using System.IO.Pipes;
+using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 using System.Text.RegularExpressions;
 using UserService.Data;
 using UserService.Model;
@@ -15,11 +15,13 @@ namespace UserService.Service
     {
         private readonly MyDBContext _context;
         public static IWebHostEnvironment _webHostEnvironment;
+        private readonly AppSettings _appSettings;
 
-        public UsersService(MyDBContext context, IWebHostEnvironment webHostEnvironment)
+        public UsersService(MyDBContext context, IWebHostEnvironment webHostEnvironment, IOptionsMonitor<AppSettings> optionsMonitor)
         {
             _context = context;
             _webHostEnvironment = webHostEnvironment;
+            _appSettings = optionsMonitor.CurrentValue;
         }
 
         public  bool ChangePassword(string userId, string newPassword,string oldPassword,string new2Password )
@@ -239,6 +241,50 @@ namespace UserService.Service
                 _context.SaveChanges();
             }
             
+        }
+
+        public string LoginUser(string username, string password)
+        {
+            Users user = _context.users.SingleOrDefault(u => u.Username == username && u.Password == password);
+
+            if (user == null)
+                return null;
+
+            var token = GenerateToken(user);
+
+            return token;
+        }
+
+        private string GenerateToken(Users users)
+        {
+            var jwtToken = new JwtSecurityTokenHandler();
+            var secretKeyBytes = Encoding.UTF8.GetBytes(_appSettings.SecretKey);
+
+            var tokenDescription = new SecurityTokenDescriptor
+            {
+                //đặc trưng người dùng
+                Subject = new ClaimsIdentity(new[]
+                {
+                    new Claim(ClaimTypes.Name,users.Nameus),
+                    new Claim(ClaimTypes.Email, users.Email),
+                    new Claim("UserName", users.Username),
+                    //new Claim("Id", users.IdUser),
+
+                    //roles
+
+                   // new Claim("TokenId", Guid.NewGuid().ToString()),
+                }),
+                Expires = DateTime.UtcNow.AddMinutes(1),
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey
+                (secretKeyBytes), SecurityAlgorithms.HmacSha512Signature)
+
+
+            };
+
+            var token = jwtToken.CreateToken(tokenDescription);
+            //trả vê fchuoixo
+            return jwtToken.WriteToken(token);
+
         }
     }
     }
