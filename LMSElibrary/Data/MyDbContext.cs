@@ -9,6 +9,7 @@ namespace SubjectService.Data
 
         #region
         public DbSet<Subject> Subjects { get; set; }
+        public DbSet<BoMon> BoMons { get; set; }
         #endregion
     }
 }

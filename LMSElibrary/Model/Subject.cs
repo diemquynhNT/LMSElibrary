@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SubjectService.Model
 {
@@ -7,7 +8,21 @@ namespace SubjectService.Model
     {
         [Key]
         public string IdSubject { get; set; }
+        [Required]
+        [MaxLength(100)]
         public string NameSubject { get; set; }
         public string SchoolYear { get; set; }
+        public string? Describe { get; set; }
+        public byte Status { get; set; }
+
+        public string? IdBoMon { get; set; }
+        [ForeignKey("IdBoMon")]
+        public BoMon boMons { get; set; }
+
+        public virtual ICollection<Topic> topics { get; set; }
+        public virtual ICollection<SubjectClass> subjectclass { get; set; }
+
+
+
     }
 }

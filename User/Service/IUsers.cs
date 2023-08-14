@@ -16,7 +16,7 @@ namespace UserService.Service
         public bool ChangePassword(string userId, string newPassword, string oldPassword, string new2Password);
         public bool IsValidUser(string id);
 
-        public string LoginUser(string username, string password);
+        public Users LoginUser(string username, string password);
         //pos
         public Task<IEnumerable<Position>> GetAllPost();
         public Task<Position> GetPosById(string id);

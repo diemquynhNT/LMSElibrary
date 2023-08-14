@@ -243,7 +243,7 @@ namespace UserService.Service
             
         }
 
-        public string LoginUser(string username, string password)
+        public Users LoginUser(string username, string password)
         {
             Users user = _context.users.SingleOrDefault(u => u.Username == username && u.Password == password);
 
@@ -251,8 +251,7 @@ namespace UserService.Service
                 return null;
 
             var token = GenerateToken(user);
-
-            return token;
+            return user;
         }
 
         private string GenerateToken(Users users)

@@ -129,8 +129,7 @@ namespace UserService.Controllers
         {
             try
             {
-                var user = _context.NguoiDungs.SingleOrDefault(p => p.UserName == model.UserName
-            && model.Passworduser == p.Passworduser);
+                var user = iuser.LoginUser(model.Username, model.Password);
 
                 if (user == null)
                 {
@@ -140,14 +139,10 @@ namespace UserService.Controllers
                         Message = "Invalid user/pass"
                     });
                 }
-
-
-
                 return Ok(new
                 {
                     Success = true,
-                    Message = "Authentication success",
-                    Data = GenerateToken(user)
+                    Message = "Authentication success"
                 });
             }
             catch (Exception ex)
