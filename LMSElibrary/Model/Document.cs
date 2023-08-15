@@ -13,12 +13,13 @@ namespace SubjectService.Model
         public string TitleDoc { get; set; }
 
         public string? IdTopic { get; set; }
-        [ForeignKey("IdTopic")]
         public Topic topics { get; set; }
 
         public string? IdClass { get; set; }
-        [ForeignKey("IdClass")]
         public SubjectClass subclass { get; set; }
+
+        public virtual ICollection<Resources> resources { get; set; }
+
 
     }
 }

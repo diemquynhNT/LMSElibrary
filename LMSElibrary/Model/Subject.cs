@@ -13,11 +13,14 @@ namespace SubjectService.Model
         public string NameSubject { get; set; }
         public string SchoolYear { get; set; }
         public string? Describe { get; set; }
+
         public byte Status { get; set; }
 
         public string? IdBoMon { get; set; }
-        [ForeignKey("IdBoMon")]
-        public BoMon boMons { get; set; }
+     
+
+
+        public BoMon BoMon { get; set; }
 
         public virtual ICollection<Topic> topics { get; set; }
         public virtual ICollection<SubjectClass> subjectclass { get; set; }

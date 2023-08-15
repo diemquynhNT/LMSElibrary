@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SubjectService.Data;
 
@@ -11,9 +12,10 @@ using SubjectService.Data;
 namespace SubjectService.Migrations
 {
     [DbContext(typeof(MyDbContext))]
-    partial class MyDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230815025654_DBSubject")]
+    partial class DBSubject
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -35,24 +37,6 @@ namespace SubjectService.Migrations
                     b.HasKey("IdBoMon");
 
                     b.ToTable("BoMons");
-                });
-
-            modelBuilder.Entity("SubjectService.Model.DetailClass", b =>
-                {
-                    b.Property<string>("IdDetailClass")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("IdClass")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("IdStudent")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("IdDetailClass");
-
-                    b.HasIndex("IdClass");
-
-                    b.ToTable("DetailClasses");
                 });
 
             modelBuilder.Entity("SubjectService.Model.Document", b =>
@@ -129,6 +113,9 @@ namespace SubjectService.Migrations
                     b.Property<string>("IdBoMon")
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<string>("IdTeacher")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("NameSubject")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -155,9 +142,6 @@ namespace SubjectService.Migrations
 
                     b.Property<string>("IdSubject")
                         .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("IdTeacher")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("NameClass")
                         .IsRequired()
@@ -189,16 +173,6 @@ namespace SubjectService.Migrations
                     b.HasIndex("IdSubject");
 
                     b.ToTable("Topics");
-                });
-
-            modelBuilder.Entity("SubjectService.Model.DetailClass", b =>
-                {
-                    b.HasOne("SubjectService.Model.SubjectClass", "SubjectClass")
-                        .WithMany("DetailClasses")
-                        .HasForeignKey("IdClass")
-                        .HasConstraintName("FK_detailclasst_class");
-
-                    b.Navigation("SubjectClass");
                 });
 
             modelBuilder.Entity("SubjectService.Model.Document", b =>
@@ -277,8 +251,6 @@ namespace SubjectService.Migrations
 
             modelBuilder.Entity("SubjectService.Model.SubjectClass", b =>
                 {
-                    b.Navigation("DetailClasses");
-
                     b.Navigation("documents");
                 });
 

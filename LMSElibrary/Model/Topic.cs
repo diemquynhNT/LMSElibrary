@@ -12,8 +12,9 @@ namespace SubjectService.Model
         public string Title { get; set; }
 
         public string? IdSubject { get; set; }
-        [ForeignKey("IdSubject")]
         public Subject subjects { get; set; }
+
+        public virtual ICollection<Document> documents { get; set; }
 
     }
 }

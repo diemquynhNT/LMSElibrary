@@ -12,11 +12,15 @@ namespace SubjectService.Model
         [MaxLength(100)]
         public string NameClass { get; set; }
 
-        public string? IdKhoa { get; set; }
-
         public string? IdSubject { get; set; }
-        [ForeignKey("IdSubject")]
-        public Subject subject { get; set; }
+        public string? IdTeacher { get; set; }
+
+        public Subject Subjects { get; set; }
+        public virtual ICollection<Document> documents { get; set; }
+        public virtual ICollection<DetailClass> DetailClasses { get; set; }
+
+
+
 
 
 
