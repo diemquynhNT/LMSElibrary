@@ -2,12 +2,13 @@
 
 namespace SubjectService.Model
 {
-    public class DetailClass
+    public class DanhsachLop
     {
         [Key]
-        public string IdDetailClass { get; set; }
-        public string? IdClass { get; set; }
-        public SubjectClass SubjectClass { get; set; }
+        public string IdDSLop { get; set; }
+
+        public string? IdLop { get; set; }
+        public Lop lop { get; set; }
         public string? IdStudent { get; set; }
     }
 }

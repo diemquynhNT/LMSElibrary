@@ -4,20 +4,25 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace SubjectService.Model
 {
     [Table("Document")]
-    public class Documents
+    public class BaiGiang
     {
         [Key]
-        public string IdDocument { get; set; }
+        public string IdBaiGiang { get; set; }
         [Required]
         [MaxLength(100)]
-        public string TitleDoc { get; set; }
+        public string TitleBaiGiang { get; set; }
 
-        public string? IdTopic { get; set; }
-        public ChuDe topics { get; set; }
+        public string? MoTa { get; set; }
 
-        public string? IdClass { get; set; }
-        public SubjectClass subclass { get; set; }
+        public string? IdChuDe { get; set; }
+        public ChuDe chuDe { get; set; }
 
+        public virtual ICollection<ChiTietBaiGiang> ctbg { get; set; }
+        // khi tạo có thể null ctdh
+        public BaiGiang()
+        {
+            ctbg = new HashSet<ChiTietBaiGiang>();
+        }
         public virtual ICollection<Resources> resources { get; set; }
 
 

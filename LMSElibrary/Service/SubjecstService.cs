@@ -17,10 +17,10 @@ namespace SubjectService.Service
         public async Task AddDocument(string title, string idtopic)
         {
             
-            var doc = new Documents();
-            doc.IdDocument = Guid.NewGuid().ToString();
-            doc.TitleDoc = title;
-            doc.IdTopic = idtopic;
+            var doc = new BaiGiang();
+            doc.IdBaiGiang = Guid.NewGuid().ToString();
+            doc.TitleBaiGiang = title;
+            doc.IdChuDe = idtopic;
             _dbContext.Add(doc);
             await _dbContext.SaveChangesAsync();
         }
@@ -29,10 +29,10 @@ namespace SubjectService.Service
         {
             try {
                 Random rd = new Random();
-                var tp = new Topic();
-                tp.IdTopic=Guid.NewGuid().ToString();
+                var tp = new ChuDe();
+                tp.IdChuDe=Guid.NewGuid().ToString();
                 tp.Title = nametopic;
-                tp.IdSubject=id;
+                tp.IdMonHoc=id;
                 _dbContext.Add(tp);
                 await _dbContext.SaveChangesAsync();
             }
@@ -43,7 +43,7 @@ namespace SubjectService.Service
 
         public void DeleteDocument(string iddoc, string idtopic)
         {
-            var doc = _dbContext.Documents.SingleOrDefault(t => t.IdTopic == idtopic && t.IdDocument == iddoc);
+            var doc = _dbContext.baiGiangs.SingleOrDefault(t => t.IdChuDe == idtopic && t.IdBaiGiang == iddoc);
             if (doc != null)
             {
                 _dbContext.Remove(doc);
@@ -53,7 +53,7 @@ namespace SubjectService.Service
 
         public void DeleteTopic(string id, string idtopic)
         {
-            var topic = _dbContext.Topics.SingleOrDefault(t => t.IdTopic == idtopic &&t.IdSubject==id);
+            var topic = _dbContext.chuDes.SingleOrDefault(t => t.IdChuDe == idtopic &&t.IdMonHoc==id);
             if (topic != null)
             {
                 _dbContext.Remove(topic);
@@ -63,10 +63,10 @@ namespace SubjectService.Service
 
         public async Task EditDocument(string title, string iddoc, string idtopic)
         {
-            var tp = _dbContext.Documents.Where(t => t.IdTopic == idtopic && t.IdDocument == iddoc).FirstOrDefault();
+            var tp = _dbContext.baiGiangs.Where(t => t.IdChuDe == idtopic && t.IdBaiGiang == iddoc).FirstOrDefault();
             if (title != null)
             {
-                tp.TitleDoc = title;
+                tp.TitleBaiGiang = title;
                 await _dbContext.SaveChangesAsync();
 
             }
@@ -74,7 +74,7 @@ namespace SubjectService.Service
 
         public async Task EditTopic(string nametopic, string id, string idtopic)
         {
-           var tp=_dbContext.Topics.Where(t=>t.IdTopic==idtopic && t.IdSubject==id).FirstOrDefault();
+           var tp=_dbContext.chuDes.Where(t=>t.IdChuDe ==idtopic && t.IdMonHoc==id).FirstOrDefault();
             if(nametopic!=null)
             {
                 tp.Title=nametopic;
@@ -83,37 +83,37 @@ namespace SubjectService.Service
             }    
         }
 
-        public List<SubjectClass> GetClassForTeacher(string id, string idgv)
+        public List<Lop> GetClassForTeacher(string id, string idgv)
         {
-            return _dbContext.SubjectClasses.Where(t => t.IdSubject == id).ToList();
+            return _dbContext.Lops.Where(t => t.IdMonHoc == id).ToList();
         }
 
-        public List<Documents> GetDocment(string id)
+        public List<BaiGiang> GetDocment(string id)
         {
-            return _dbContext.Documents.Where(t => t.IdTopic == id).ToList();
+            return _dbContext.baiGiangs.Where(t => t.IdChuDe == id).ToList();
         }
 
         public async Task<MonHoc> GetSubjectByIdAsync(string id)
         {
-            return await _dbContext.Subjects.Where(x => x.IdSubject == id).FirstOrDefaultAsync();
+            return await _dbContext.monHocs.Where(x => x.IdMonHoc == id).FirstOrDefaultAsync();
         }
 
         public async Task<MonHoc> GetSubjectByName(string id)
         {
-            return await _dbContext.Subjects.Where(x => x.NameSubject == id).FirstOrDefaultAsync();
+            return await _dbContext.monHocs.Where(x => x.TenMonHoc == id).FirstOrDefaultAsync();
         }
 
         
 
         public List<MonHoc> GetSubjectListAsync()
         {
-            return _dbContext.Subjects.ToList();
+            return _dbContext.monHocs.ToList();
         }
 
 
-        public List<Topic> GetTopicsSubject(string id)
+        public List<ChuDe> GetTopicsSubject(string id)
         {
-            return _dbContext.Topics.Where(t=>t.IdSubject==id).ToList();
+            return _dbContext.chuDes.Where(t=>t.IdMonHoc==id).ToList();
         }
     }
 }

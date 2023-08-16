@@ -16,7 +16,7 @@ namespace SubjectService.Controllers
             isp = _isp;
         }
         [HttpGet("GetDocument")]
-        public List<Documents> GetDocument(string Id)
+        public List<BaiGiang> GetDocument(string Id)
         {
             return isp.GetDocment(Id);
         }

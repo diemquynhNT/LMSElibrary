@@ -1,5 +1,4 @@
 ﻿using SubjectService.Data;
-using SubjectService.Migrations;
 using SubjectService.Model;
 
 namespace SubjectService.Service
@@ -9,8 +8,8 @@ namespace SubjectService.Service
         public List<MonHoc> GetSubjectListAsync();
         public Task<MonHoc> GetSubjectByIdAsync(string id);
         public Task<MonHoc> GetSubjectByName(string id);
-        public List<Topic> GetTopicsSubject(string id);
-        public List<Documents> GetDocment(string id);
+        public List<ChuDe> GetTopicsSubject(string id);
+        public List<BaiGiang> GetDocment(string id);
 
         public Task AddTopic(string nametopic,string id);
         public Task EditTopic(string nametopic, string id,string idtopic);
