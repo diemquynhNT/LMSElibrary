@@ -16,8 +16,8 @@ namespace SubjectService.Data
         public DbSet<BaiGiang> baiGiangs { get; set; }
         public DbSet<Resources> Resources { get; set; }
         public DbSet<DanhsachLop> danhsachLops { get; set; }
-     public DbSet<ChiTietBaiGiang> chitietbaiGiang { get; set; }
-       //public DbSet<ChitietLop> chitietLop { get; set; }
+        public DbSet<ChiTietBaiGiang> chitietbaiGiang { get; set; }
+        public DbSet<ChitietLop> chitietLop { get; set; }
         public DbSet<ThongtinMonHoc> thongtinMonhoc { get; set; }
         #endregion
 
@@ -70,36 +70,36 @@ namespace SubjectService.Data
                   .HasForeignKey(e => e.IdBaiGiang);
             });
 
-            //modelBuilder.Entity<ChitietLop>(ct =>
-            //{
-            //    ct.ToTable("ChiTietLop");
-            //    ct.HasKey(t => new { t.IdLop, t.IdMonHoc });
+            modelBuilder.Entity<ChitietLop>(ct =>
+            {
+                ct.ToTable("ChiTietLop");
+                ct.HasKey(t => new { t.IdLop, t.IdMonHoc });
 
-            //   // ct.HasOne(e => e.monHoc).
-            //   //    WithMany(e => e.ctlop)
-            //   //   .HasConstraintName("FK_ctlop_monhoc")
-            //   //   .HasForeignKey(e => e.IdMonHoc);
+                ct.HasOne(e => e.monHoc).
+                   WithMany(e => e.ctlop)
+                  .HasConstraintName("FK_ctlop_monhoc")
+                  .HasForeignKey(e => e.IdMonHoc);
 
-            //   // ct.HasOne(e => e.lop).
-            //   // WithMany(e => e.ctlop)
-            //   //.HasConstraintName("FK_ctlop_lop")
-            //   //.HasForeignKey(e => e.IdLop);
-            //});
+                ct.HasOne(e => e.lop).
+                WithMany(e => e.ctlop)
+               .HasConstraintName("FK_ctlop_lop")
+               .HasForeignKey(e => e.IdLop);
+            });
 
             modelBuilder.Entity<ChiTietBaiGiang>(ct =>
             {
                 ct.ToTable("ChitietBaiGiang");
                 ct.HasKey(t => new { t.IdLop, t.IdBaiGiang });
 
-               // ct.HasOne(e => e.baiGiang).
-               //    WithMany(e => e.ctbg)
-               //   .HasConstraintName("FK_ctbaigiang_baigiang")
-               //   .HasForeignKey(e => e.IdBaiGiang);
+                ct.HasOne(e => e.baiGiang).
+                   WithMany(e => e.ctbg)
+                  .HasConstraintName("FK_ctbaigiang_baigiang")
+                  .HasForeignKey(e => e.IdBaiGiang);
 
-               // ct.HasOne(e => e.lop).
-               // WithMany(e => e.ctbg)
-               //.HasConstraintName("FK_ctbg_lop")
-               //.HasForeignKey(e => e.IdLop);
+                ct.HasOne(e => e.lop).
+                WithMany(e => e.ctbg)
+               .HasConstraintName("FK_ctbg_lop")
+               .HasForeignKey(e => e.IdLop);
             });
 
 

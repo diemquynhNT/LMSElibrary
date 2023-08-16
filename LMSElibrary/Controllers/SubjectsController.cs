@@ -18,20 +18,20 @@ namespace SubjectService.Controllers
         }
 
         [HttpGet("list")]
-        public List<MonHoc> SubjectListAsync()
+        public List<Subject> SubjectListAsync()
         {
                 var subjectList = isp.GetSubjectListAsync();
                 return subjectList;
         }
         [HttpGet("GetById")]
-        public Task<MonHoc> GetSubjectByIdAsync(string Id)
+        public Task<Subject> GetSubjectByIdAsync(string Id)
         {
             return isp.GetSubjectByIdAsync(Id);
         }
 
 
         [HttpGet("SearchSubject")]
-        public Task<MonHoc> SearchSubject(string keyword)
+        public Task<Subject> SearchSubject(string keyword)
         {
             var sub = isp.GetSubjectByIdAsync(keyword);
             if (sub == null)

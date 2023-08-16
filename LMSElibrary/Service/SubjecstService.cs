@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SubjectService.Data;
 using SubjectService.Model;
@@ -8,12 +9,15 @@ namespace SubjectService.Service
     public class SubjecstService : ISubjectService
     {
         private readonly MyDbContext _dbContext;
+        public static IWebHostEnvironment _webHostEnvironment;
+        private object _context;
 
-        public SubjecstService(MyDbContext dbContext)
+        public SubjecstService(MyDbContext dbContext, IWebHostEnvironment webHostEnvironment)
         {
             _dbContext = dbContext;
-        }
+            _webHostEnvironment = webHostEnvironment;
 
+        }
         public async Task AddDocument(string title, string idtopic)
         {
             
@@ -25,20 +29,54 @@ namespace SubjectService.Service
             await _dbContext.SaveChangesAsync();
         }
 
+        public async Task AddVideo(IFormFile videoFile, string id)
+        {
+            var tn = new Resources();
+            tn.IdResources = Guid.NewGuid().ToString();
+            tn.TinhTrangDuyet = false;
+            tn.NgayGui = DateTime.Now;
+            tn.IdBaiGiang = id;
+
+            if (videoFile == null || videoFile.Length == 0)
+            {
+                throw new ArgumentException("No file selected");
+            }
+
+            if (videoFile.ContentType != "video/mp4")
+            {
+                throw new ArgumentException("Invalid file type");
+            }
+
+            string path = _webHostEnvironment.WebRootPath + "\\uploads\\";
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+
+            }
+            using (FileStream fileStream = System.IO.File.Create(path + videoFile.FileName))
+            {
+                videoFile.CopyTo(fileStream);
+                fileStream.Flush();
+                tn.FormatFile = videoFile.ContentType;
+                tn.FileURL = videoFile.FileName;
+
+            }
+           
+            _dbContext.Add(tn);
+            await _dbContext.SaveChangesAsync();
+        }
+
         public async Task AddTopic(string nametopic, string id)
         {
-            try {
+          
                 Random rd = new Random();
                 var tp = new ChuDe();
                 tp.IdChuDe=Guid.NewGuid().ToString();
                 tp.Title = nametopic;
                 tp.IdMonHoc=id;
-                _dbContext.Add(tp);
+                _dbContext.chuDes.Add(tp);
                 await _dbContext.SaveChangesAsync();
-            }
-            catch {
-                throw;    
-            }
+            
         }
 
         public void DeleteDocument(string iddoc, string idtopic)
@@ -83,10 +121,10 @@ namespace SubjectService.Service
             }    
         }
 
-        public List<Lop> GetClassForTeacher(string id, string idgv)
-        {
-            return _dbContext.Lops.Where(t => t.IdMonHoc == id).ToList();
-        }
+        //public List<Lop> GetClassForTeacher(string id, string idgv)
+        //{
+        //    return _dbContext.Lops.Where(t => t.IdMonHoc == id).ToList();
+        //}
 
         public List<BaiGiang> GetDocment(string id)
         {
@@ -114,6 +152,22 @@ namespace SubjectService.Service
         public List<ChuDe> GetTopicsSubject(string id)
         {
             return _dbContext.chuDes.Where(t=>t.IdMonHoc==id).ToList();
+        }
+
+        public List<Resources> GetVideo()
+        {
+            return _dbContext.Resources.Where(t=>t.FormatFile == "video/mp4").ToList();
+            
+        }
+
+        public void DeleteVideo(string id)
+        {
+            var video = _dbContext.Resources.SingleOrDefault(t => t.IdResources==id && t.FormatFile == "video/mp4");
+            if (video != null)
+            {
+                _dbContext.Remove(video);
+                _dbContext.SaveChanges();
+            }
         }
     }
 }

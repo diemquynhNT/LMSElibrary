@@ -9,15 +9,15 @@ namespace SubjectService.Model
         [Required]
         [MaxLength(100)]
         public string FormatFile { get; set; }
-        public string? Mota { get; set; }
-        public string? NguoiDuyet { get; set; }
+        public string? DescribeFile { get; set; }
+        public string? UserCheck { get; set; }
         public string? FileURL { get; set; }
-        public bool TinhTrangDuyet { get; set; }
+        public bool StatusFile { get; set; }
         public string? NoteRes { get; set; }
-        public DateTime NgayGui { get; set; }
+        public DateTime DateSent { get; set; }
 
-        public string? IdBaiGiang { get; set; }
-        public BaiGiang baiGiang { get; set; }
+        public string? IdLecture { get; set; }
+        public Lectures lectures { get; set; }
 
     }
 }

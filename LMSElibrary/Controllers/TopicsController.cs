@@ -16,7 +16,7 @@ namespace SubjectService.Controllers
             isp = _isp;
         }
         [HttpGet("GetTopic")]
-        public List<ChuDe> GetTopic(string Id)
+        public List<Topic> GetTopic(string Id)
         {
             return isp.GetTopicsSubject(Id);
         }

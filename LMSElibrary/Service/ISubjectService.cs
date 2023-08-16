@@ -1,5 +1,4 @@
-﻿using SubjectService.Data;
-using SubjectService.Model;
+﻿using SubjectService.Model;
 
 namespace SubjectService.Service
 {
@@ -18,6 +17,12 @@ namespace SubjectService.Service
         public Task AddDocument(string title, string idtopic);
         public Task EditDocument(string title, string iddoc, string idtopic);
         public void DeleteDocument(string iddoc, string idtopic);
+
+        public Task AddVideo(IFormFile videoFile, string id);
+        public List<Resources> GetVideo();
+        public void DeleteVideo(string id);
+
+
 
 
     }
