@@ -12,9 +12,9 @@ namespace SubjectService.Model
         public string Title { get; set; }
 
         public string? IdSubject { get; set; }
-        public Subject subjects { get; set; }
+        public MonHoc subjects { get; set; }
 
-        public virtual ICollection<Document> documents { get; set; }
+        public virtual ICollection<Documents> documents { get; set; }
 
     }
 }

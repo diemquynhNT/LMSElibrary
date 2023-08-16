@@ -7,27 +7,27 @@ namespace SubjectService.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class TopicsController : ControllerBase
+    public class DocumentsController : ControllerBase
     {
         private readonly ISubjectService isp;
 
-        public TopicsController(ISubjectService _isp)
+        public DocumentsController(ISubjectService _isp)
         {
             isp = _isp;
         }
-        [HttpGet("GetTopic")]
-        public List<ChuDe> GetTopic(string Id)
+        [HttpGet("GetDocument")]
+        public List<Documents> GetDocument(string Id)
         {
-            return isp.GetTopicsSubject(Id);
+            return isp.GetDocment(Id);
         }
 
-        [HttpPost("AddTopic")]
-        public async Task<ActionResult> AddTopic([FromForm] string name, [FromForm] string id)
+        [HttpPost("AddDocument")]
+        public async Task<ActionResult> AddDocument([FromForm] string title, string id)
         {
 
             try
             {
-                await isp.AddTopic(name, id);
+                await isp.AddDocument(title, id);
                 return Ok();
             }
             catch (Exception)
@@ -36,14 +36,14 @@ namespace SubjectService.Controllers
             }
         }
 
-        [HttpPost("EditTopic")]
-        public async Task<ActionResult> EditTopic([FromForm] string name, string id, string idtopic)
+        [HttpPost("EditDocument")]
+        public async Task<ActionResult> EditDocument([FromForm] string name, string id, string idtopic)
         {
 
 
             try
             {
-                await isp.EditTopic(name, id, idtopic);
+                await isp.EditDocument(name, id, idtopic);
                 return Ok();
             }
             catch (Exception)
@@ -53,14 +53,12 @@ namespace SubjectService.Controllers
         }
 
         [HttpDelete("delete")]
-        public IActionResult DeleteTopic(string id, string idtopic)
+        public IActionResult DeleteDoc(string id, string idtopic)
         {
             try
             {
-                isp.DeleteTopic(id,idtopic);
+                isp.DeleteDocument(id, idtopic);
                 return Ok();
-
-
             }
             catch
             {

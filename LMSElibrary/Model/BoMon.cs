@@ -9,8 +9,8 @@ namespace SubjectService.Model
         public string IdBoMon { get; set; }
         [Required]
         [MaxLength(100)]
-        public string NameBoMon { get; set; }
+        public string TenBoMon { get; set; }
 
-        public virtual ICollection<Subject> subjects { get; set; }
+        public virtual ICollection<MonHoc> MonHocs { get; set; }
     }
 }

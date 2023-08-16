@@ -16,7 +16,7 @@ namespace SubjectService.Model
         public string? IdTeacher { get; set; }
 
         public Subject Subjects { get; set; }
-        public virtual ICollection<Document> documents { get; set; }
+        public virtual ICollection<Documents> documents { get; set; }
         public virtual ICollection<DetailClass> DetailClasses { get; set; }
 
 

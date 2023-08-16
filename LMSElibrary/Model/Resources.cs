@@ -17,7 +17,7 @@ namespace SubjectService.Model
         public DateTime sentdate { get; set; }
 
         public string? IdDocument { get; set; }
-        public Document documents { get; set; }
+        public BaiGiang documents { get; set; }
 
     }
 }

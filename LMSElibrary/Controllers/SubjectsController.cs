@@ -18,20 +18,20 @@ namespace SubjectService.Controllers
         }
 
         [HttpGet("list")]
-        public List<Subject> SubjectListAsync()
+        public List<MonHoc> SubjectListAsync()
         {
                 var subjectList = isp.GetSubjectListAsync();
                 return subjectList;
         }
         [HttpGet("GetById")]
-        public Task<Subject> GetSubjectByIdAsync(string Id)
+        public Task<MonHoc> GetSubjectByIdAsync(string Id)
         {
             return isp.GetSubjectByIdAsync(Id);
         }
 
 
         [HttpGet("SearchSubject")]
-        public Task<Subject> SearchSubject(string keyword)
+        public Task<MonHoc> SearchSubject(string keyword)
         {
             var sub = isp.GetSubjectByIdAsync(keyword);
             if (sub == null)
@@ -39,42 +39,7 @@ namespace SubjectService.Controllers
             return sub;
         }
 
-        [HttpGet("GetTopic")]
-        public List<Topic> GetTopic(string Id)
-        {
-            return isp.GetTopicsSubject(Id);
-        }
-
-        [HttpPost("AddTopic")]
-        public async Task<ActionResult> AddTopic([FromForm] string name, [FromForm] string id)
-        {
-           
-            try
-            {
-                await isp.AddTopic(name,id);
-                return Ok();
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-        }
-
-        [HttpPost("EditTopic")]
-        public async Task<ActionResult> EditTopic([FromForm] string name, string id, string idtopic)
-        {
-           
-
-            try
-            {
-                await isp.EditTopic(name, id,idtopic);
-                return Ok();
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-        }
+    
 
     }
 }

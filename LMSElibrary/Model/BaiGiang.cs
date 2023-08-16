@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace SubjectService.Model
 {
     [Table("Document")]
-    public class Document
+    public class Documents
     {
         [Key]
         public string IdDocument { get; set; }
@@ -13,7 +13,7 @@ namespace SubjectService.Model
         public string TitleDoc { get; set; }
 
         public string? IdTopic { get; set; }
-        public Topic topics { get; set; }
+        public ChuDe topics { get; set; }
 
         public string? IdClass { get; set; }
         public SubjectClass subclass { get; set; }
