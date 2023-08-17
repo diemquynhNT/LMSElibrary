@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using SubjectService.Model;
 using SubjectService.Service;
+using System.IO;
 
 namespace SubjectService.Controllers
 {
@@ -77,27 +78,31 @@ namespace SubjectService.Controllers
             }
         }
 
-        [HttpPost]
+        [HttpPost("AddFile")]
         //[RequestFormLimits(MultipartBodyLengthLimit = 104857600)]
-        public IActionResult Index(List<IFormFile> postedFiles)
+        public async Task<IActionResult> AddFile(List<IFormFile> postedFiles,string id)
         {
-            string wwwPath = this.Environment.WebRootPath;
-            string contentPath = this.Environment.ContentRootPath;
-            string path = Path.Combine(this.Environment.WebRootPath, "Uploads");
-            if (!Directory.Exists(path))
+            
+            if (postedFiles.Count == 0)
             {
-                Directory.CreateDirectory(path);
+                return BadRequest();
             }
-            foreach (IFormFile postedFile in postedFiles)
+
+            try
             {
-                string fileName = Path.GetFileName(postedFile.FileName);
-                using (FileStream stream = new FileStream(Path.Combine(path, fileName), FileMode.Create))
+                foreach (IFormFile postedFile in postedFiles)
                 {
-                   
-                    postedFile.CopyTo(stream);
+                    await _context.AddFile(postedFile, id);
                 }
+                return Ok();
+
+                
             }
-            return Ok();
+            catch (Exception)
+            {
+                throw;
+            }
+           
         }
 
         

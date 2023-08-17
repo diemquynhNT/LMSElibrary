@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SubjectService.Data;
+using SubjectService.Dto;
 using SubjectService.Model;
 
 namespace SubjectService.Service
@@ -18,15 +19,7 @@ namespace SubjectService.Service
             _webHostEnvironment = webHostEnvironment;
 
         }
-        public async Task AddLecture(string title, string idtopic)
-        {
-            var l = new Lectures();
-            l.IdLecture = Guid.NewGuid().ToString();
-            l.TitleLecture = title;
-            l.IdTopic = idtopic;
-            _dbContext.Add(l);
-            await _dbContext.SaveChangesAsync();
-        }
+       
 
         public async Task AddVideo(IFormFile videoFile, string id)
         {
@@ -124,7 +117,7 @@ namespace SubjectService.Service
         //    return _dbContext.Lops.Where(t => t.IdMonHoc == id).ToList();
         //}
 
-        public List<Lectures> GetDocment(string id)
+        public List<Lectures> GetLectures(string id)
         {
             return _dbContext.lectures.Where(t => t.IdTopic == id).ToList();
         }
@@ -166,6 +159,51 @@ namespace SubjectService.Service
                 _dbContext.Remove(video);
                 _dbContext.SaveChanges();
             }
+        }
+
+        public async Task AddFile(IFormFile filedetail, string id)
+        {
+            var tn = new Resources();
+            tn.IdResources = Guid.NewGuid().ToString();
+            tn.StatusFile = false;
+            tn.DateSent = DateTime.Now;
+            tn.IdLecture = id;
+
+            if (filedetail == null || filedetail.Length == 0)
+            {
+                throw new ArgumentException("No file selected");
+            }
+
+
+            string path = _webHostEnvironment.WebRootPath + "\\uploads\\";
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+
+            }
+            using (FileStream fileStream = System.IO.File.Create(path + filedetail.FileName))
+            {
+                filedetail.CopyTo(fileStream);
+                fileStream.Flush();
+                tn.FormatFile = filedetail.ContentType;
+                tn.FileURL = filedetail.FileName;
+
+            }
+
+            _dbContext.Add(tn);
+            await _dbContext.SaveChangesAsync();
+        }
+
+        public async Task<string> AddLecture(string title,string id,string des)
+        {
+            var l = new Lectures();
+            l.IdLecture = Guid.NewGuid().ToString();
+            l.TitleLecture = title;
+            l.Describe = des;
+            l.IdTopic = id;
+            _dbContext.Add(l);
+            await _dbContext.SaveChangesAsync();
+            return l.IdLecture;
         }
     }
 }
