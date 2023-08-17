@@ -1,10 +1,10 @@
 ﻿namespace SubjectService.Model
 {
-    public class ChiTietBaiGiang
+    public class DetailLectures
     {
-        public string IdLop { get; set; }
-        public string IdBaiGiang { get; set; }
-        public BaiGiang baiGiang { get; set; }
-        public Lop lop { get; set; }
+        public string IdClass { get; set; }
+        public string IdLectures { get; set; }
+        public Lectures lectures { get; set; }
+        public ClassSubject classSubjects { get; set; }
     }
 }

@@ -3,14 +3,14 @@ using System.Runtime.CompilerServices;
 
 namespace SubjectService.Model
 {
-    public class BoMon
+    public class Department
     {
         [Key]
-        public string IdBoMon { get; set; }
+        public string IdDepartment { get; set; }
         [Required]
         [MaxLength(100)]
-        public string TenBoMon { get; set; }
+        public string NameDepartment { get; set; }
 
-        public virtual ICollection<MonHoc> MonHocs { get; set; }
+        public virtual ICollection<Subject> subjects { get; set; }
     }
 }

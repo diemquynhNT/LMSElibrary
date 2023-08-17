@@ -19,7 +19,25 @@ namespace SubjectService.Controllers
             _context = context;
             Environment = _environment;
         }
-        [HttpPost("AddResource")]
+        [HttpPost("ThemBaiGiang")]
+        public async Task<ActionResult> AddBaiGiang([FromForm] TaiLieuModel res, string id)
+        {
+            if (res == null)
+            {
+                return BadRequest();
+            }
+
+            try
+            {
+                await _context.AddVideo(res.ResourcesUpload, id);
+                return Ok();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+        [HttpPost("AddVideo")]
         public async Task<ActionResult> AddUser([FromForm] TaiLieuModel res, string id)
         {
             if (res == null)
@@ -44,7 +62,7 @@ namespace SubjectService.Controllers
         }
 
         [HttpDelete("delete")]
-        public IActionResult DeleteTopic(string id)
+        public IActionResult DeleteVideo(string id)
         {
             try
             {

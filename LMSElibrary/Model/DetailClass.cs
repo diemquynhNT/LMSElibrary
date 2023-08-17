@@ -1,10 +1,10 @@
 ﻿namespace SubjectService.Model
 {
-    public class ChitietLop
+    public class DetailClass
     {
-        public string IdLop { get; set; }
-        public string IdMonHoc { get; set; }
-        public MonHoc monHoc { get; set; }
-        public Lop lop { get; set; }
+        public string IdClass { get; set; }
+        public string IdSubject { get; set; }
+        public Subject subject { get; set; }
+        public ClassSubject classsubject { get; set; }
     }
 }

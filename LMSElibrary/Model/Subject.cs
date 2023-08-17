@@ -4,24 +4,24 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SubjectService.Model
 {
-    public class MonHoc
+    public class Subject
     {
         [Key]
-        public string IdMonHoc { get; set; }
+        public string IdSubject { get; set; }
         [Required]
         [MaxLength(100)]
-        public string TenMonHoc { get; set; }
-        public string NienKhoa { get; set; }
-        public string? Mota { get; set; }
+        public string NameSubject { get; set; }
+        public string Schoolyear { get; set; }
+        public string? DescribeSubject { get; set; }
 
-        public bool TrangThai { get; set; }
+        public bool StatusSubject { get; set; }
 
-        public string? IdBoMon { get; set; }
-        public BoMon BoMon { get; set; }
+        public string? IdDepartment { get; set; }
+        public Department department { get; set; }
 
-        public virtual ICollection<ThongtinMonHoc> ttmh { get; set; }
-        public virtual ICollection<ChuDe> topics { get; set; }
-        public virtual ICollection<ChitietLop> ctlop { get; set; }
+        public virtual ICollection<SubjectInfo> subjectInfos { get; set; }
+        public virtual ICollection<Topic> topics { get; set; }
+        public virtual ICollection<DetailClass> detailClass { get; set; }
         // khi tạo có thể null ctdh
         //public MonHoc()
         //{

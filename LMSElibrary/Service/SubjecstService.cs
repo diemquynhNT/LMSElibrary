@@ -18,14 +18,13 @@ namespace SubjectService.Service
             _webHostEnvironment = webHostEnvironment;
 
         }
-        public async Task AddDocument(string title, string idtopic)
+        public async Task AddLecture(string title, string idtopic)
         {
-            
-            var doc = new BaiGiang();
-            doc.IdBaiGiang = Guid.NewGuid().ToString();
-            doc.TitleBaiGiang = title;
-            doc.IdChuDe = idtopic;
-            _dbContext.Add(doc);
+            var l = new Lectures();
+            l.IdLecture = Guid.NewGuid().ToString();
+            l.TitleLecture = title;
+            l.IdTopic = idtopic;
+            _dbContext.Add(l);
             await _dbContext.SaveChangesAsync();
         }
 
@@ -33,9 +32,9 @@ namespace SubjectService.Service
         {
             var tn = new Resources();
             tn.IdResources = Guid.NewGuid().ToString();
-            tn.TinhTrangDuyet = false;
-            tn.NgayGui = DateTime.Now;
-            tn.IdBaiGiang = id;
+            tn.StatusFile = false;
+            tn.DateSent = DateTime.Now;
+            tn.IdLecture = id;
 
             if (videoFile == null || videoFile.Length == 0)
             {
@@ -68,20 +67,19 @@ namespace SubjectService.Service
 
         public async Task AddTopic(string nametopic, string id)
         {
-          
                 Random rd = new Random();
-                var tp = new ChuDe();
-                tp.IdChuDe=Guid.NewGuid().ToString();
-                tp.Title = nametopic;
-                tp.IdMonHoc=id;
-                _dbContext.chuDes.Add(tp);
+                var tp = new Topic();
+                tp.IdTopic=Guid.NewGuid().ToString();
+                tp.TitleTopic = nametopic;
+                tp.IdSubject=id;
+                _dbContext.topics.Add(tp);
                 await _dbContext.SaveChangesAsync();
             
         }
 
-        public void DeleteDocument(string iddoc, string idtopic)
+        public void DeleteLecture(string iddoc, string idtopic)
         {
-            var doc = _dbContext.baiGiangs.SingleOrDefault(t => t.IdChuDe == idtopic && t.IdBaiGiang == iddoc);
+            var doc = _dbContext.lectures.SingleOrDefault(t => t.IdTopic == idtopic && t.IdLecture == iddoc);
             if (doc != null)
             {
                 _dbContext.Remove(doc);
@@ -91,7 +89,7 @@ namespace SubjectService.Service
 
         public void DeleteTopic(string id, string idtopic)
         {
-            var topic = _dbContext.chuDes.SingleOrDefault(t => t.IdChuDe == idtopic &&t.IdMonHoc==id);
+            var topic = _dbContext.topics.SingleOrDefault(t => t.IdTopic == idtopic &&t.IdSubject==id);
             if (topic != null)
             {
                 _dbContext.Remove(topic);
@@ -99,23 +97,23 @@ namespace SubjectService.Service
             }
         }
 
-        public async Task EditDocument(string title, string iddoc, string idtopic)
-        {
-            var tp = _dbContext.baiGiangs.Where(t => t.IdChuDe == idtopic && t.IdBaiGiang == iddoc).FirstOrDefault();
-            if (title != null)
-            {
-                tp.TitleBaiGiang = title;
-                await _dbContext.SaveChangesAsync();
+        //public async Task EditDocument(string title, string iddoc, string idtopic)
+        //{
+        //    var tp = _dbContext.baiGiangs.Where(t => t.IdChuDe == idtopic && t.IdBaiGiang == iddoc).FirstOrDefault();
+        //    if (title != null)
+        //    {
+        //        tp.TitleBaiGiang = title;
+        //        await _dbContext.SaveChangesAsync();
 
-            }
-        }
+        //    }
+        //}
 
         public async Task EditTopic(string nametopic, string id, string idtopic)
         {
-           var tp=_dbContext.chuDes.Where(t=>t.IdChuDe ==idtopic && t.IdMonHoc==id).FirstOrDefault();
+           var tp=_dbContext.topics.Where(t=>t.IdTopic ==idtopic && t.IdSubject==id).FirstOrDefault();
             if(nametopic!=null)
             {
-                tp.Title=nametopic;
+                tp.TitleTopic=nametopic;
                 await _dbContext.SaveChangesAsync();
 
             }    
@@ -126,32 +124,32 @@ namespace SubjectService.Service
         //    return _dbContext.Lops.Where(t => t.IdMonHoc == id).ToList();
         //}
 
-        public List<BaiGiang> GetDocment(string id)
+        public List<Lectures> GetDocment(string id)
         {
-            return _dbContext.baiGiangs.Where(t => t.IdChuDe == id).ToList();
+            return _dbContext.lectures.Where(t => t.IdTopic == id).ToList();
         }
 
-        public async Task<MonHoc> GetSubjectByIdAsync(string id)
+        public async Task<Subject> GetSubjectByIdAsync(string id)
         {
-            return await _dbContext.monHocs.Where(x => x.IdMonHoc == id).FirstOrDefaultAsync();
+            return await _dbContext.subjects.Where(x => x.IdSubject == id).FirstOrDefaultAsync();
         }
 
-        public async Task<MonHoc> GetSubjectByName(string id)
+        public async Task<Subject> GetSubjectByName(string id)
         {
-            return await _dbContext.monHocs.Where(x => x.TenMonHoc == id).FirstOrDefaultAsync();
+            return await _dbContext.subjects.Where(x => x.NameSubject == id).FirstOrDefaultAsync();
         }
 
         
 
-        public List<MonHoc> GetSubjectListAsync()
+        public List<Subject> GetSubjectListAsync()
         {
-            return _dbContext.monHocs.ToList();
+            return _dbContext.subjects.ToList();
         }
 
 
-        public List<ChuDe> GetTopicsSubject(string id)
+        public List<Topic> GetTopicsSubject(string id)
         {
-            return _dbContext.chuDes.Where(t=>t.IdMonHoc==id).ToList();
+            return _dbContext.topics.Where(t=>t.IdSubject==id).ToList();
         }
 
         public List<Resources> GetVideo()

@@ -2,17 +2,17 @@
 
 namespace SubjectService.Model
 {
-    public class ThongtinMonHoc
+    public class SubjectInfo
     {
         [Key]
-        public string IdThongtin { get; set; }
+        public string IdSubjectInfo { get; set; }
         [Required]
         [MaxLength(100)]
-        public string TieuDe { get; set; }
-        public string NoiDung { get; set; }
+        public string Title { get; set; }
+        public string ContentSubject { get; set; }
 
-        public string? IdMonHoc { get; set; }
-        public MonHoc monHoc { get; set; }
+        public string? IdSubject { get; set; }
+        public Subject subjects { get; set; }
 
     }
 }

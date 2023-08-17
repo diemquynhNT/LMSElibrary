@@ -9,54 +9,53 @@ namespace SubjectService.Data
         public MyDbContext(DbContextOptions options) : base(options) { }
 
         #region
-        public DbSet<MonHoc> monHocs { get; set; }
-        public DbSet<BoMon> boMons { get; set; }
-        public DbSet<Lop> Lops { get; set; }
-        public DbSet<ChuDe> chuDes { get; set; }
-        public DbSet<BaiGiang> baiGiangs { get; set; }
+        public DbSet<Subject> subjects { get; set; }
+        public DbSet<Department> departments { get; set; }
+        public DbSet<ClassSubject> classSubjects { get; set; }
+        public DbSet<Topic> topics { get; set; }
+        public DbSet<Lectures> lectures { get; set; }
         public DbSet<Resources> Resources { get; set; }
-        public DbSet<DanhsachLop> danhsachLops { get; set; }
-        public DbSet<ChiTietBaiGiang> chitietbaiGiang { get; set; }
-        public DbSet<ChitietLop> chitietLop { get; set; }
-        public DbSet<ThongtinMonHoc> thongtinMonhoc { get; set; }
+        public DbSet<ClassList> classLists { get; set; }
+        public DbSet<DetailLectures> detailLectures { get; set; }
+        public DbSet<DetailClass> detailClasses { get; set; }
+        public DbSet<SubjectInfo> subjectInfos { get; set; }
         #endregion
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<MonHoc>(sub =>
+            modelBuilder.Entity<Subject>(sub =>
             {
-                sub.HasOne(e => e.BoMon).
-                 WithMany(e => e.MonHocs)
+                sub.HasOne(e => e.department).
+                 WithMany(e => e.subjects)
                 .HasConstraintName("FK_MonHoc_BoMon")
-                .HasForeignKey(e => e.IdBoMon);
+                .HasForeignKey(e => e.IdDepartment);
             }
             ) ;
 
-            modelBuilder.Entity<ThongtinMonHoc>(t =>
+            modelBuilder.Entity<SubjectInfo>(t =>
 
-               t.HasOne(e => e.monHoc).
-                  WithMany(e => e.ttmh)
+               t.HasOne(e => e.subjects).
+                  WithMany(e => e.subjectInfos)
                  .HasConstraintName("FK_ttmh_monhoc")
-                 .HasForeignKey(e => e.IdMonHoc)
+                 .HasForeignKey(e => e.IdSubject)
            );
 
          
 
-            modelBuilder.Entity<ChuDe>(tp =>
+            modelBuilder.Entity<Topic>(tp =>
             {
-                tp.HasOne(e => e.monHoc).
+                tp.HasOne(e => e.subjects).
                    WithMany(e => e.topics)
                   .HasConstraintName("FK_chude_monhoc")
-                  .HasForeignKey(e => e.IdMonHoc);
+                  .HasForeignKey(e => e.IdSubject);
             });
 
-            modelBuilder.Entity<BaiGiang>(dc =>
+            modelBuilder.Entity<Lectures>(dc =>
             {
-
-                dc.HasOne(e => e.chuDe).
-                   WithMany(e => e.documents)
+                dc.HasOne(e => e.topics).
+                   WithMany(e => e.lecture)
                   .HasConstraintName("FK_baigiang_chude")
-                  .HasForeignKey(e => e.IdChuDe);
+                  .HasForeignKey(e => e.IdTopic);
 
                
             });
@@ -64,52 +63,50 @@ namespace SubjectService.Data
             modelBuilder.Entity<Resources>(tp =>
             {
 
-                tp.HasOne(e => e.baiGiang).
+                tp.HasOne(e => e.lectures).
                    WithMany(e => e.resources)
                   .HasConstraintName("FK_res_baigiang")
-                  .HasForeignKey(e => e.IdBaiGiang);
+                  .HasForeignKey(e => e.IdLecture);
             });
 
-            modelBuilder.Entity<ChitietLop>(ct =>
+            modelBuilder.Entity<DetailClass>(ct =>
             {
-                ct.ToTable("ChiTietLop");
-                ct.HasKey(t => new { t.IdLop, t.IdMonHoc });
+                ct.HasKey(t => new { t.IdClass, t.IdSubject });
 
-                ct.HasOne(e => e.monHoc).
-                   WithMany(e => e.ctlop)
+                ct.HasOne(e => e.subject).
+                   WithMany(e => e.detailClass)
                   .HasConstraintName("FK_ctlop_monhoc")
-                  .HasForeignKey(e => e.IdMonHoc);
+                  .HasForeignKey(e => e.IdSubject);
 
-                ct.HasOne(e => e.lop).
-                WithMany(e => e.ctlop)
+                ct.HasOne(e => e.classsubject).
+                WithMany(e => e.detailClass)
                .HasConstraintName("FK_ctlop_lop")
-               .HasForeignKey(e => e.IdLop);
+               .HasForeignKey(e => e.IdClass);
             });
 
-            modelBuilder.Entity<ChiTietBaiGiang>(ct =>
+            modelBuilder.Entity<DetailLectures>(ct =>
             {
-                ct.ToTable("ChitietBaiGiang");
-                ct.HasKey(t => new { t.IdLop, t.IdBaiGiang });
+                ct.HasKey(t => new { t.IdClass, t.IdLectures });
 
-                ct.HasOne(e => e.baiGiang).
-                   WithMany(e => e.ctbg)
+                ct.HasOne(e => e.lectures).
+                   WithMany(e => e.detailLectures)
                   .HasConstraintName("FK_ctbaigiang_baigiang")
-                  .HasForeignKey(e => e.IdBaiGiang);
+                  .HasForeignKey(e => e.IdLectures);
 
-                ct.HasOne(e => e.lop).
-                WithMany(e => e.ctbg)
+                ct.HasOne(e => e.classSubjects).
+                WithMany(e => e.detailLectures)
                .HasConstraintName("FK_ctbg_lop")
-               .HasForeignKey(e => e.IdLop);
+               .HasForeignKey(e => e.IdClass);
             });
 
 
-            modelBuilder.Entity<DanhsachLop>(t =>
+            modelBuilder.Entity<ClassList>(t =>
             {
 
-                t.HasOne(e => e.lop).
+                t.HasOne(e => e.classSubject).
                    WithMany(e => e.dslop)
                   .HasConstraintName("FK_dslop_lop")
-                  .HasForeignKey(e => e.IdLop);
+                  .HasForeignKey(e => e.IdClass);
             });
 
 
