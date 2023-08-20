@@ -1,29 +1,29 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using UserService.Model;
 
-namespace UserService.Model
+namespace UserService.Dto
 {
-    public class ImageUploadModel
+    public class UsersModel
     {
-        public IFormFile Users { get; set; }
-        [Required]
+        
         public bool Gender { get; set; }
-        [Required]
-        [MaxLength(100)]
+
         public string Nameus { get; set; }
-        [Required]
-        [EmailAddress]
+
         public string Email { get; set; }
-        [Required]
-        [MaxLength(20)]
+
         public string Username { get; set; }
-        [Required]
-        [MaxLength(20)]
         public string Password { get; set; }
         [Required]
         [Phone]
         public string Numphone { get; set; }
-        [Required]
-        [MaxLength(100)]
         public string Address { get; set; }
+
+        public string IdPos { get; set; }
+
+        public string? IdClass { get; set; }
+
+        public string? IdKhoa { get; set; }
     }
 }

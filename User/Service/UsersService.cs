@@ -7,6 +7,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Text.RegularExpressions;
 using UserService.Data;
+using UserService.Dto;
 using UserService.Model;
 
 namespace UserService.Service
@@ -24,96 +25,34 @@ namespace UserService.Service
             _appSettings = optionsMonitor.CurrentValue;
         }
 
-        public  bool ChangePassword(string userId, string newPassword,string oldPassword,string new2Password )
+        public  bool ChangePassword(string userId, UserPasswordVM us)
         {
             var user =  _context.users.SingleOrDefault(t=>t.IdUser==userId);
             if (user == null)
             {
                 return false;
             }
-            if (user.Password != oldPassword)
+            if (user.Password != us.oldPassword)
                 return false;
-            if (ValidatePassword(newPassword)==false)
+            if (ValidatePassword(us.newPassword1) ==false)
                 return false;
-            else if( newPassword!=new2Password)
+            else if(us.newPassword1!=us.newPassword2)
                 return false;
             else
             {
-                user.Password= newPassword;
+                user.Password= us.newPassword1;
                 _context.SaveChanges();
                 return true;
-
             }
         }
         public bool ValidatePassword(string password)
         {
-            
             string passwordRegex = @"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W]).{8,}$";
-
             bool isValid = Regex.IsMatch(password, passwordRegex);
-
             return isValid;
         }
 
-        public async Task CreateUsers(ImageUploadModel us, string idkhoa, string idpos)
-        {
-
-            try
-            {
-                Random rd = new Random();
-                var keypos = "";
-                if (idpos == "GV")
-                    keypos = "GV";
-                else if (idpos == "SV")
-                    keypos = "SV";
-                else keypos = "AD";
-
-                Users users = new Users();
-                users.IdUser = keypos + rd.Next(1, 100);
-                users.Nameus = us.Nameus;
-                users.Email = us.Email;
-                users.Numphone = us.Numphone;
-                users.Username = us.Username;
-                users.Password = us.Password;
-                users.Address = us.Address;
-                users.IdPos = idpos;
-                users.IdKhoa = idkhoa;
-                users.Gender = us.Gender;
-                //using (var stream = new MemoryStream())
-                //    {
-                //    if (stream.Length < 2097152)
-                //    {
-                //        ImageData.CopyTo(stream);
-                //        users.ImageUser = stream.ToArray();
-                //    }
-                //    }
-
-                if (us.Users.Length > 0)
-                {
-                    string path = _webHostEnvironment.WebRootPath + "\\uploads\\";
-                    if (!Directory.Exists(path))
-                    {
-                        Directory.CreateDirectory(path);
-
-                    }
-                    using (FileStream fileStream = System.IO.File.Create(path + us.Users.FileName))
-                    {
-                        us.Users.CopyTo(fileStream);
-                        fileStream.Flush();
-                        users.ImageUser = us.Users.FileName;
-
-                    }
-                }
-                _context.Add(users);
-                await _context.SaveChangesAsync();
-                   
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-           
-        }
+      
 
        
 
@@ -129,20 +68,20 @@ namespace UserService.Service
 
         
 
-        public async Task<UserModel> EditUsers(UserModel us, string id)
-        {
-            Users users = _context.users.Where(t => t.IdUser == id).FirstOrDefault();
-            users.Nameus = us.Nameus;
-            users.Email = us.Email;
-            users.Numphone = us.Numphone;
-            users.Username = us.Username;
-            users.Password = us.Password;
-            users.Address = us.Address;
-            _context.Add(users);
-            await _context.SaveChangesAsync();
+        //public async Task<UserModel> EditUsers(UserModel us, string id)
+        //{
+        //    Users users = _context.users.Where(t => t.IdUser == id).FirstOrDefault();
+        //    users.Nameus = us.Nameus;
+        //    users.Email = us.Email;
+        //    users.Numphone = us.Numphone;
+        //    users.Username = us.Username;
+        //    users.Password = us.Password;
+        //    users.Address = us.Address;
+        //    _context.Add(users);
+        //    await _context.SaveChangesAsync();
 
-            return us;
-        }
+        //    return us;
+        //}
 
         public async Task<IEnumerable<Users>> GetAllUsers()
         {
@@ -176,7 +115,7 @@ namespace UserService.Service
                 Directory.CreateDirectory(imagePath);
             }
 
-            // Tạo tên tệp duy nhất bằng cách kết hợp thời gian hiện tại và tên tệp gốc
+           
             var uniqueFileName = DateTime.Now.Ticks + "_" + imageFile.FileName;
 
             var filePath = Path.Combine(imagePath, uniqueFileName);
@@ -249,8 +188,6 @@ namespace UserService.Service
 
             if (user == null)
                 return null;
-
-            var token = GenerateToken(user);
             return user;
         }
 
@@ -284,6 +221,53 @@ namespace UserService.Service
             //trả vê fchuoixo
             return jwtToken.WriteToken(token);
 
+        }
+
+        public async Task AddUsersAsync(IFormFile imge, Users us)
+        {
+            Random rd = new Random();
+            var keypos = "";
+            if (us.IdPos == "GV")
+                keypos = "GV";
+            else if (us.IdPos == "SV")
+                keypos = "SV";
+            else keypos = "AD";
+            us.IdUser = keypos+rd.Next(1,9)+ rd.Next(10, 99);
+            if (imge.Length > 0)
+            {
+                string path = _webHostEnvironment.WebRootPath + "\\uploads\\";
+                if (!Directory.Exists(path))
+                {
+                    Directory.CreateDirectory(path);
+
+                }
+                using (FileStream fileStream = System.IO.File.Create(path + imge.FileName))
+                {
+                    imge.CopyTo(fileStream);
+                    fileStream.Flush();
+                    us.ImageUser = imge.FileName;
+
+                }
+            }
+            _context.Add(us);
+            await _context.SaveChangesAsync();
+        }
+
+        public void DeleteAllUser()
+        {
+            List<Users> listuser = _context.users.ToList();
+            foreach (var user in listuser)
+            {
+                _context.Remove(user);
+            }
+            _context.SaveChangesAsync().Wait();
+            
+        }
+
+        public string GetToken(Users user)
+        {
+            var token = GenerateToken(user);
+            return token;
         }
     }
     }

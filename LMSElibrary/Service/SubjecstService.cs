@@ -151,9 +151,9 @@ namespace SubjectService.Service
             
         }
 
-        public void DeleteVideo(string id)
+        public void DeleteResource (string id)
         {
-            var video = _dbContext.Resources.SingleOrDefault(t => t.IdResources==id && t.FormatFile == "video/mp4");
+            var video = _dbContext.Resources.SingleOrDefault(t => t.IdResources==id);
             if (video != null)
             {
                 _dbContext.Remove(video);
@@ -205,5 +205,27 @@ namespace SubjectService.Service
             await _dbContext.SaveChangesAsync();
             return l.IdLecture;
         }
+
+        public Task PhanCongTL(IFormFile filedetail, string id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task DuyetTaiLieu(string id,bool check)
+        {
+            var tailieu = _dbContext.Resources.Where(t => t.IdResources == id).FirstOrDefault();
+            if(tailieu!=null)
+            {
+                tailieu.StatusFile = check;
+                await _dbContext.SaveChangesAsync();
+            }    
+        }
+
+        public List<Resources> GetResources()
+        {
+           return _dbContext.Resources.ToList();
+        }
+
+       
     }
 }

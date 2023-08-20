@@ -20,6 +20,8 @@ namespace SubjectService.Controllers
             _context = context;
             Environment = _environment;
         }
+
+
         [HttpPost("ThemBaiGiang")]
         public async Task<ActionResult> AddBaiGiang([FromForm] TaiLieuModel res, string id)
         {
@@ -67,7 +69,7 @@ namespace SubjectService.Controllers
         {
             try
             {
-                _context.DeleteVideo(id);
+                _context.DeleteResource(id);
                 return Ok();
 
 

@@ -1,7 +1,19 @@
+using AutoMapper;
+using ExamService.Data;
+using ExamService.Services;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddDbContext<MyDbExamContext>(options =>
+{
+    options.UseSqlServer(builder.Configuration.GetConnectionString("MyDBExam"));
+});
+builder.Services.AddScoped<IExamServices, ExamServices>();
 
-// Add services to the container.
 
+builder.Services.AddAutoMapper(typeof(Program));
+
+builder.Services.AddHttpClient<ExamServices>();
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -15,6 +27,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
 
 app.UseHttpsRedirection();
 

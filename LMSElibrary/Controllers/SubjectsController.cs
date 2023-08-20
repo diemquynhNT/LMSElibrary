@@ -23,23 +23,34 @@ namespace SubjectService.Controllers
                 var subjectList = isp.GetSubjectListAsync();
                 return subjectList;
         }
-        [HttpGet("GetById")]
+        [HttpGet("DetailSubject")]
         public Task<Subject> GetSubjectByIdAsync(string Id)
         {
             return isp.GetSubjectByIdAsync(Id);
         }
 
 
+
+
         [HttpGet("SearchSubject")]
-        public Task<Subject> SearchSubject(string keyword)
+        public async Task<ActionResult<Subject>> SearchSubject(string keyword)
         {
-            var sub = isp.GetSubjectByIdAsync(keyword);
-            if (sub == null)
-                return isp.GetSubjectByName(keyword);
-            return sub;
+            try
+            {
+                var sub = await isp.GetSubjectByIdAsync(keyword);
+                if (sub != null)
+                {
+                    return sub;
+                }
+                return BadRequest("Lỗi");
+            }
+            catch
+            {
+                return BadRequest("Lỗi");
+            }
         }
 
-    
 
-    }
+
+        }
 }

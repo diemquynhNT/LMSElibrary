@@ -1,8 +1,10 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Net.WebSockets;
 using System.Runtime.CompilerServices;
+using UserService.Dto;
 using UserService.Model;
 using UserService.Service;
 
@@ -14,11 +16,13 @@ namespace UserService.Controllers
     {
         private readonly IUsers iuser;
         public static IWebHostEnvironment _webHostEnvironment;
+        private readonly IMapper _mapper;
 
-        public UsersController(IUsers _iuser,IWebHostEnvironment webHostEnvironment)
+        public UsersController(IUsers _iuser,IWebHostEnvironment webHostEnvironment, IMapper mapper)
         {
             iuser = _iuser;
             _webHostEnvironment = webHostEnvironment;
+            _mapper = mapper;
         }
 
        
@@ -57,18 +61,19 @@ namespace UserService.Controllers
         }
 
         [HttpPost("AddUser")]
-        public async Task<ActionResult> AddUser([FromForm] ImageUploadModel fileDetails,string idkhoa, string idpos)
+        public async Task<ActionResult> AddUser([FromForm] UsersModel userDto, IFormFile imge)
         {
-            if (fileDetails == null)
-            {
-                return BadRequest();
-            }
-
+           
             try
             {
-                PositionModel us= new PositionModel();
-                await iuser.CreateUsers(fileDetails,idkhoa,idpos);
-                return Ok();
+                bool checkpass = iuser.ValidatePassword(userDto.Password);
+                if(!checkpass)
+                {
+                    return BadRequest("password khong hop le");
+                }
+                var userModel = _mapper.Map<Users>(userDto);
+                iuser.AddUsersAsync(imge, userModel);
+                return Ok("da tao user");
             }
             catch (Exception)
             {
@@ -77,14 +82,14 @@ namespace UserService.Controllers
         }
 
         [HttpPut("ChangePassword")]
-        public IActionResult ChangePasswordUser(string userId, string newPassword, string oldPassword, string new2Password)
+        public IActionResult ChangePasswordUser(string userId, [FromForm] UserPasswordVM us)
         {
             try
             {
-                bool check = iuser.ChangePassword(userId, newPassword, oldPassword, new2Password);
+                bool check = iuser.ChangePassword(userId, us);
                 if (!check)
                     return BadRequest("loi");
-                return Ok("Da doi");
+                return Ok("Da doi password");
                 
             }
             catch
@@ -92,19 +97,19 @@ namespace UserService.Controllers
                 return BadRequest("khon hop le");
             }
         }
-        [HttpPut("EditUser")]
-        public IActionResult EditUser(UserModel users,string id)
-        {
-            bool check = iuser.IsValidUser(id);
-            if (!check)
-            {
-                return BadRequest("Thông tin người dùng không hợp lệ");
-            }
+        //[HttpPut("EditUser")]
+        //public IActionResult EditUser(UserModel users,string id)
+        //{
+        //    bool check = iuser.IsValidUser(id);
+        //    if (!check)
+        //    {
+        //        return BadRequest("Thông tin người dùng không hợp lệ");
+        //    }
 
-            iuser.EditUsers(users, id);
+        //    iuser.EditUsers(users, id);
 
-            return Ok("Người dùng đã được tải lên thành công");
-        }
+        //    return Ok("Người dùng đã được tải lên thành công");
+        //}
 
 
         [HttpDelete("{id}")]
@@ -123,6 +128,22 @@ namespace UserService.Controllers
             }
 
         }
+        [HttpDelete("DeleteAll")]
+        public IActionResult DeleteAllUser()
+        {
+            try
+            {
+                iuser.DeleteAllUser();
+
+                return Ok();
+
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
+        }
 
         [HttpPost("Login")]
         public IActionResult Validate(LoginModel model)
@@ -130,6 +151,7 @@ namespace UserService.Controllers
             try
             {
                 var user = iuser.LoginUser(model.Username, model.Password);
+                
 
                 if (user == null)
                 {
@@ -142,8 +164,9 @@ namespace UserService.Controllers
                 return Ok(new
                 {
                     Success = true,
-                    Message = "Authentication success"
-                });
+                    Message = "Authentication success",
+                    Data = iuser.GetToken(user)
+                }) ;
             }
             catch (Exception ex)
             {

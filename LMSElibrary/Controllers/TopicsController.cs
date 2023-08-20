@@ -15,10 +15,15 @@ namespace SubjectService.Controllers
         {
             isp = _isp;
         }
-        [HttpGet("GetTopic")]
-        public List<Topic> GetTopic(string Id)
+        [HttpGet("ListTopic")]
+        public List<Topic> GetTopic(string IdSubject)
         {
-            return isp.GetTopicsSubject(Id);
+            return isp.GetTopicsSubject(IdSubject);
+        }
+        [HttpGet("DetailTopic")]
+        public List<Lectures> GetDetailTopic(string idTopic)
+        {
+            return isp.GetLectures(idTopic);
         }
 
         [HttpPost("AddTopic")]

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
@@ -49,6 +50,8 @@ builder.Services.AddAuthentication
     }
 
     );
+//mapper
+builder.Services.AddAutoMapper(typeof(Program));
 
 var app = builder.Build();
 
