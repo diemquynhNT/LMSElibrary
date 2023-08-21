@@ -111,11 +111,6 @@ namespace ExamService.Services
             throw new NotImplementedException();
         }
 
-        public void GetDeailQuestion(string id)
-        {
-            throw new NotImplementedException();
-        }
-
         public List<Exams> GetExams()
         {
             return _context.exams.ToList();
@@ -125,7 +120,20 @@ namespace ExamService.Services
         {
             return _context.exams.Where(t => t.IdExam == id).FirstOrDefaultAsync();
         }
+        public List<DetailExam> GetQuestion(string id)
+        {
+           return _context.detailExams.Where(t => t.IdExam == id).ToList();
+        }
 
+        public Questions GetDetailQuestions(string id)
+        {
+            return _context.questions.Where(t => t.IdQuestion == id).FirstOrDefault();
+        }
+
+        public async Task<List<OptionQuestion>> GetOptionsQuestion(string id)
+        {
+            return _context.optionQuestions.Where(t => t.IdQuestion == id).ToList();
+        }
         public async Task<bool> VerifySubjectExists(string idsubject)
         {
             var response = await _httpClient.GetAsync($"https://localhost:7121/api/Subjects/SearchSubject?keyword={idsubject}");
@@ -147,6 +155,7 @@ namespace ExamService.Services
                 //}
             }
         }
+
     }
 }
 

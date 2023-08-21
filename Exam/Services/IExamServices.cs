@@ -23,11 +23,11 @@ namespace ExamService.Services
         public void AddExamQuestion(string idexa, string ques);
         public void AddOptions(string idQues,string content);
 
-       
-
-
         public void AddQuestuonsByFileExcel();
-        public void GetDeailQuestion(string id);
+
+        public List<DetailExam> GetQuestion(string id);
+        //public Task<OptionQuestion> GetOptionsQuestion(string id);
+        public Questions GetDetailQuestions(string id);
         public void EditQuestion(string id);
         public void DeleteQuestion(string id);
 

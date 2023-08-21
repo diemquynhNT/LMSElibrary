@@ -5,6 +5,7 @@ using ExamService.Model;
 using ExamService.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 
 namespace ExamService.Controllers
 {
@@ -33,7 +34,8 @@ namespace ExamService.Controllers
         }
 
         [HttpPost("AddExam")]
-        public async Task<ActionResult> AddExam(string idteacher,string starus,[FromForm]ExamModel examModel, [FromForm] QuestionsModel questionsModel)
+        public async Task<ActionResult> AddExam(string idteacher,string starus,[FromForm]ExamModel examModel, [FromForm] QuestionsModel questionsModel, 
+            [FromForm] List<string> demo)
         {
 
             try
@@ -48,9 +50,9 @@ namespace ExamService.Controllers
                     _context.AddExamQuestion(exams, questions);
                     if (ex.FormatExam = true)
                     {
-                        foreach (var t in questionsModel.Ques)
+                        foreach (var t in demo)
                         {
-                            _context.AddOptions(questions, t.content);
+                            _context.AddOptions(questions, t);
                         }
                     }
                     return Ok("them thanh cong");
@@ -62,6 +64,55 @@ namespace ExamService.Controllers
                 throw;
             }
         }
+
+        [HttpGet("GetDetailExams")]
+        public async Task<ActionResult> GetDetailExams(string keyword)
+        {
+            try
+            {
+                var sub = await _context.GetExamsById(keyword);
+                if (sub != null)
+                    return Ok(sub);
+                return BadRequest("Không tìm thất");
+            }
+            catch
+            {
+                return BadRequest("Lỗi");
+            }
+        }
+
+        
+
+        [HttpGet("GetQuestion")]
+        public async Task<ActionResult> GetQuestion(string keyword)
+        {
+            try
+            {
+                var sub = _context.GetQuestion(keyword);
+                if (sub == null)
+                    return BadRequest("Không tìm thấy");
+
+                List<Questions> detailList = new List<Questions>();
+                foreach (var t in sub)
+                {
+                    var detail = _context.GetDetailQuestions(t.IdQuestion);
+                    detailList.Add(detail);
+                }
+
+                if (detailList.Count > 0)
+                    return Ok(detailList[0]);
+                else
+                    return BadRequest("khong co ds");
+            }
+            catch
+            {
+                return BadRequest("Lỗi");
+            }
+        }
+
+
+
+
 
     }
 }

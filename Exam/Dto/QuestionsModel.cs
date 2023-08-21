@@ -10,6 +10,6 @@ namespace ExamService.Dto
 
         public string answ { get; set; }
 
-        public List<OptionQuesModel> Ques { get; set; }
+        //public List<OptionQuesModel> Ques { get; set; }
     }
 }
