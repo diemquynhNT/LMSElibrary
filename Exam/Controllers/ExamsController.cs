@@ -1,11 +1,14 @@
 ﻿using AutoMapper;
 using AutoMapper.Features;
+using DocumentFormat.OpenXml.Drawing;
+using DocumentFormat.OpenXml.Packaging;
 using ExamService.Dto;
 using ExamService.Model;
 using ExamService.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
+using System.Text;
 
 namespace ExamService.Controllers
 {
@@ -26,36 +29,56 @@ namespace ExamService.Controllers
         {
             return _context.GetExams();
         }
+        [HttpGet("GetListQuestion")]
+        public List<Questions> GetListQuestion()
+        {
+            return _context.GetAllQuestion();
+        }
+
+        [HttpGet("GetListQuestionById")]
+        public async Task<ActionResult> GetListQuestionById(string idexam)
+        {
+            try
+            {
+                var list = _context.GetQuestion(idexam);
+                if (list != null)
+                    return Ok(list);
+                return BadRequest("Không tìm thấy");
+            }
+            catch
+            {
+                return BadRequest("Lỗi");
+            }
+        }
         [HttpGet]
         public async Task<bool> CheckSubjectExistsFromExamService(string subjectId)
         {
             var subjectExists = await _context.VerifySubjectExists(subjectId);
             return subjectExists;
         }
+        //[HttpPost]
+        //public async Task<ActionResult> AddQuestion(string id,string idmon, [FromForm] QuestionsModel questionsModel, [FromForm] List<string> op)
+        //{
+        //   var ques = _mapper.Map<Questions>(questionsModel);
+        //    return Ok("them thanh cong");
+
+        //}
 
         [HttpPost("AddExam")]
-        public async Task<ActionResult> AddExam(string idteacher,string starus,[FromForm]ExamModel examModel, [FromForm] QuestionsModel questionsModel, 
-            [FromForm] List<string> demo)
+        public async Task<ActionResult> AddExam(string idteacher,string starus,[FromForm]ExamModel examModel)
         {
 
             try
             {
-                var subjectExists = await _context.VerifySubjectExists(examModel.IdSubject);
+              var subjectExists = await _context.VerifySubjectExists(examModel.IdSubject);
+               
                 if (subjectExists == true)
                 {
-                    Exams ex = _mapper.Map<Exams>(examModel);
-                    var ques = _mapper.Map<Questions>(questionsModel);
+                    var ex = _mapper.Map<Exams>(examModel);
+
                     string exams = _context.AddExam(idteacher, starus, ex);
-                    string questions = _context.AddQuestions(idteacher, exams, ques);
-                    _context.AddExamQuestion(exams, questions);
-                    if (ex.FormatExam = true)
-                    {
-                        foreach (var t in demo)
-                        {
-                            _context.AddOptions(questions, t);
-                        }
-                    }
-                    return Ok("them thanh cong");
+                    
+                    return Ok();
                 }
                 return BadRequest("khong tim thay subject");
             }
@@ -65,51 +88,70 @@ namespace ExamService.Controllers
             }
         }
 
-        [HttpGet("GetDetailExams")]
-        public async Task<ActionResult> GetDetailExams(string keyword)
+        [HttpPost("AddQuestionToExam")]
+        public async Task<ActionResult> AddQuestion(string idmon,string idexam,string idTecher,List<QuestionsModel> questionsModel)
         {
             try
             {
-                var sub = await _context.GetExamsById(keyword);
-                if (sub != null)
-                    return Ok(sub);
-                return BadRequest("Không tìm thất");
+                var ex = _context.GetExamsById(idexam);
+                if(ex == null)
+                    return BadRequest("khong tim thay exam");
+
+                foreach (var item in questionsModel)
+                {
+                    var ques = _mapper.Map<Questions>(item);
+                    var idques = _context.AddQuestions(idTecher, idmon, ques);
+                    _context.AddExamQuestion(idexam, idques);
+
+                }
+                return Ok();
+                
+                
             }
-            catch
+            catch (Exception)
             {
-                return BadRequest("Lỗi");
+                throw;
             }
         }
 
-        
 
-        [HttpGet("GetQuestion")]
-        public async Task<ActionResult> GetQuestion(string keyword)
+
+        [HttpPost("ImportDocument")]
+        public async Task<IActionResult> ImportDocumentAsync(IFormFile file,string id,string iusser)
         {
-            try
+            if (file != null && file.Length > 0)
             {
-                var sub = _context.GetQuestion(keyword);
-                if (sub == null)
-                    return BadRequest("Không tìm thấy");
+                Task<List<Questions>> task = _context.ImportDocument(file);
+                List<Questions> questionList = await task;
 
-                List<Questions> detailList = new List<Questions>();
-                foreach (var t in sub)
+                foreach (var item in questionList)
                 {
-                    var detail = _context.GetDetailQuestions(t.IdQuestion);
-                    detailList.Add(detail);
+                    _context.AddQuestions(iusser, id, item);
                 }
 
-                if (detailList.Count > 0)
-                    return Ok(detailList[0]);
-                else
-                    return BadRequest("khong co ds");
+                return Ok();
             }
-            catch
-            {
-                return BadRequest("Lỗi");
-            }
+
+            
+            return BadRequest();
         }
 
+        [HttpDelete("deleteExam")]
+        public async Task<IActionResult> DeleteExam(string id)
+        {
+            var result = await _context.DeleteExam(id);
+            if (!result)
+                return NotFound();
+            return Ok("xoa thanh cong");
+        }
+        [HttpDelete("deleteQuestion")]
+        public async Task<IActionResult> deleteQuestion(string id)
+        {
+            var result = await _context.DeleteQuestion(id);
+            if (!result)
+                return NotFound();
+            return Ok("xoa question thanh cong");
+        }
 
 
 

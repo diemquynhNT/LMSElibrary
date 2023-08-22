@@ -15,7 +15,7 @@ namespace ExamService.Dto
         //public string LevelQuestion { get; set; }
         //public string Answers { get; set; }
 
-        //public List<OptionQuesModel> Ques { get; set; }
+        //public List<QuestionsModel> questionsModel { get; set; }
 
 
     }

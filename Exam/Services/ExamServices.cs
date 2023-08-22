@@ -1,6 +1,7 @@
 ﻿using ExamService.Data;
 using ExamService.Model;
 using Microsoft.EntityFrameworkCore;
+using OfficeOpenXml;
 using System.Net;
 using System.Net.Http;
 
@@ -50,19 +51,15 @@ namespace ExamService.Services
 
         }
 
-        public void AddQuestionsLibrabry(string id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public string AddQuestions(string id, string idMon, Questions questions)
+     
+        public string AddQuestions(string idTeacher, string idMon, Questions questions)
         {
             Random rd = new Random();
             questions.IdQuestion = "MCH" + rd.Next(1, 9) + rd.Next(2, 99);
             if (questions.LevelQuestion == null)
                 questions.LevelQuestion = "Bình thường";
             questions.DateCreate = DateTime.Now;
-            questions.IdUser = id;
+            questions.IdUser = idTeacher;
             questions.IdMon = idMon;
             _context.Add(questions);
             _context.SaveChanges();
@@ -70,30 +67,29 @@ namespace ExamService.Services
         }
 
 
-        public void AddOptions(string idQues, string content)
+
+        public async Task<bool> DeleteExam(string id)
         {
-            Random rd = new Random();
-            OptionQuestion op = new OptionQuestion();
-            op.IdQuestion = idQues;
-            op.IdOptions = "MLC" + rd.Next(1, 9) + rd.Next(2, 99);
-            op.ContentOption = content;
-            _context.Add(op);
-            _context.SaveChanges();
+            var exam = await _context.exams.FindAsync(id);
+            if (exam == null)
+                return false;
+
+            _context.exams.Remove(exam);
+            await _context.SaveChangesAsync();
+
+            return true;
         }
 
-        public void AddQuestuonsByFileExcel()
+        public async Task<bool> DeleteQuestion(string id)
         {
-            throw new NotImplementedException();
-        }
+            var ques = await _context.questions.FindAsync(id);
+            if (ques == null)
+                return false;
 
-        public void DeleteExam(string id)
-        {
-            throw new NotImplementedException();
-        }
+            _context.questions.Remove(ques);
+            await _context.SaveChangesAsync();
 
-        public void DeleteQuestion(string id)
-        {
-            throw new NotImplementedException();
+            return true;
         }
 
         public Task DownloadEXamById(string id)
@@ -130,10 +126,6 @@ namespace ExamService.Services
             return _context.questions.Where(t => t.IdQuestion == id).FirstOrDefault();
         }
 
-        public async Task<List<OptionQuestion>> GetOptionsQuestion(string id)
-        {
-            return _context.optionQuestions.Where(t => t.IdQuestion == id).ToList();
-        }
         public async Task<bool> VerifySubjectExists(string idsubject)
         {
             var response = await _httpClient.GetAsync($"https://localhost:7121/api/Subjects/SearchSubject?keyword={idsubject}");
@@ -145,16 +137,80 @@ namespace ExamService.Services
             else
             {
                 return false;
-                //if (response.StatusCode == HttpStatusCode.NotFound)
-                //{
-                //    return false;
-                //}
-                //else
-                //{
-                //    throw new Exception("Failed to verify subject existence from subject service.");
-                //}
             }
         }
+
+
+        public List<Questions> GetAllQuestion()
+        {
+            return _context.questions.ToList();
+        }
+
+        public async Task<List<Questions>> ImportDocument(IFormFile file)
+        {
+            var list = new List<Questions>();
+            using (var stream = new MemoryStream())
+            {
+                await file.CopyToAsync(stream);
+                using (var package = new ExcelPackage())
+                {
+                    ExcelPackage.LicenseContext = LicenseContext.Commercial;
+                    package.Load(stream);
+                    ExcelWorksheet worksheet = package.Workbook.Worksheets[0];
+                    var rowcount = worksheet.Dimension.Rows;
+                    for (int row = 2; row <= rowcount; row++)
+                    {
+                        list.Add(new Questions
+                        {
+                            STT = Convert.ToInt32(worksheet.Cells[row, 1].Value),
+                            IdQuestion = worksheet.Cells[row, 2].Value.ToString().Trim(),
+                            ContentQuestion = worksheet.Cells[row, 3].Value.ToString().Trim(),
+                            LevelQuestion = worksheet.Cells[row, 4].Value.ToString().Trim(),
+                            ChoiceA = worksheet.Cells[row, 5].Value.ToString().Trim(),
+                            ChoiceB = worksheet.Cells[row, 6].Value.ToString().Trim(),
+                            ChoiceC = worksheet.Cells[row, 7].Value.ToString().Trim(),
+                            ChoiceD = worksheet.Cells[row, 8].Value.ToString().Trim(),
+                            AnswerQuestions = worksheet.Cells[row, 9].Value.ToString().Trim(),
+                            DateCreate = DateTime.Now
+                        });
+
+                    }
+                }
+                return list;
+            }
+        }
+        //public void ImportDocument(IFormFile file)
+        //{
+        //    List<Questions> questionsList = new List<Questions>();
+
+        //    using (var excelPackage = new ExcelPackage(file.OpenReadStream()))
+        //    {
+        //        var worksheet = excelPackage.Workbook.Worksheets[0]; // Lấy sheet đầu tiên
+
+        //        int rowCount = worksheet.Dimension.Rows;
+        //        int colCount = worksheet.Dimension.Columns;
+
+        //        for (int row = 2; row <= rowCount; row++) // Bắt đầu từ hàng 2 để bỏ qua header
+        //        {
+        //            var question = new Questions();
+
+        //            question.STT = Convert.ToInt32(worksheet.Cells[row, 1].Value);
+        //            question.IdQuestion = worksheet.Cells[row, 2].Value.ToString().Trim();
+        //            question.ContentQuestion = worksheet.Cells[row, 3].Value.ToString().Trim();
+        //            question.LevelQuestion = worksheet.Cells[row, 4].Value.ToString().Trim();
+        //            question.ChoiceA = worksheet.Cells[row, 5].Value.ToString().Trim();
+        //            question.ChoiceB = worksheet.Cells[row, 6].Value.ToString().Trim();
+        //            question.ChoiceC = worksheet.Cells[row, 7].Value.ToString().Trim();
+        //            question.ChoiceD = worksheet.Cells[row, 8].Value.ToString().Trim();
+        //            question.AnswerQuestions = worksheet.Cells[row, 9].Value.ToString().Trim();
+        //            question.IdMon = "haha";
+        //            question.IdUser = "demo";
+        //            question.DateCreate = DateTime.Now;
+        //            questionsList.Add(question);
+        //        }
+        //    }
+
+        //}
 
     }
 }

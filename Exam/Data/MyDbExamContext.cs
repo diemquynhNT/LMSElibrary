@@ -8,11 +8,10 @@ namespace ExamService.Data
         public MyDbExamContext (DbContextOptions options) : base(options) { }
 
         #region
-        //public DbSet<Answer> answers { get; set; }
         public DbSet<DetailExam> detailExams { get; set; }
         public DbSet<Exams> exams { get; set; }
-        public DbSet<OptionQuestion> optionQuestions { get; set; }
         public DbSet<Questions> questions { get; set; }
+        public DbSet<demo> demos { get; set; }
 
         #endregion
 
@@ -33,23 +32,8 @@ namespace ExamService.Data
             }
             );
 
-           // modelBuilder.Entity<Answer>(t =>
-           // {
-           //     t.HasOne(e => e.questions).
-           //      WithMany(e => e.answers)
-           //     .HasConstraintName("FK_answer_questions")
-           //     .HasForeignKey(e => e.IdQuestion);
-           // }
-           //);
+        
 
-            modelBuilder.Entity<OptionQuestion>(sub =>
-            {
-                sub.HasOne(e => e.questions).
-                 WithMany(e => e.op)
-                .HasConstraintName("FK_op_questions")
-                .HasForeignKey(e => e.IdQuestion);
-            }
-           );
         }
     }
 }
