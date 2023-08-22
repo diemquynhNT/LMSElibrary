@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using UserService.Dto;
 using UserService.Model;
@@ -11,11 +12,13 @@ namespace UserService.Controllers
     public class PositionsController : ControllerBase
     {
         private readonly IUsers iuser;
+        private readonly IMapper _mapper;
 
-        public PositionsController(IUsers _iuser)
+        public PositionsController(IUsers _iuser,IMapper mapper)
         {
             iuser = _iuser;
-           
+            _mapper = mapper;
+
         }
 
         [HttpGet("ListPostion")]
@@ -27,24 +30,32 @@ namespace UserService.Controllers
 
 
         [HttpGet("GetPosById")]
-        public Task<Position> GetPosByiD(string Id)
+        public async Task<ActionResult> GetPosByiD(string Id)
         {
-            var p = iuser.GetPosById(Id);
-            return p;
+            try
+            {
+                var p = await iuser.GetPosById(Id);
+                if (p == null)
+                    return BadRequest("khong tim thay");
+                return Ok(p);
+            }
+            catch
+            {
+                return BadRequest();
+            }
         }
 
         [HttpPost("AddPosition")]
-        public async Task<ActionResult> AddUser([FromForm] PositionModel posDetails)
+        public async Task<ActionResult> AddPosition([FromForm] PositionModel posDetails)
         {
             if (posDetails == null)
             {
                 return BadRequest();
             }
-
             try
             {
-              
-                await iuser.AddPos(posDetails);
+                var pos=_mapper.Map<Position>(posDetails);
+                await iuser.AddPos(pos);
                 return Ok();
             }
             catch (Exception)
@@ -52,5 +63,25 @@ namespace UserService.Controllers
                 throw;
             }
         }
+
+        [HttpPut("editPos")]
+        public async Task<IActionResult> editPos([FromForm] PositionModel p)
+        {
+            var pos = await iuser.GetPosById(p.IdPos);
+            if (pos == null)
+                return NotFound("Khong tim thay");
+            _mapper.Map(p, pos);
+            await iuser.EditPos(pos);
+            return Ok("thanh cong");
+        }
+
+
+        [HttpDelete("deletePos")]
+        public async Task<IActionResult> deletePos(string id)
+        {
+             iuser.DeletePos(id);
+            return Ok("xoa thanh cong");
+        }
+
     }
 }

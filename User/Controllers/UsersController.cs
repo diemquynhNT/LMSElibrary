@@ -35,16 +35,6 @@ namespace UserService.Controllers
             return NotFound();
         }
 
-        //[HttpGet("UpLoadImage")]
-        //public IActionResult GetImage(string id)
-        //{
-
-        //    byte[] imageBytes = iuser.GetImage(id);
-        //    string mimeType = "image/png";
-        //    return File(imageBytes, mimeType);
-        //}
-
-
         [HttpGet("Listuser")]
         public Task<IEnumerable<Users>> GetAllUsers()
         {
@@ -52,13 +42,24 @@ namespace UserService.Controllers
             return listuserr;
         }
 
-      
-        [HttpGet("filterlist")]
-        public Task<Users> GetUserById (string Id)
+        [HttpGet("GetUserById")]
+        public async Task<ActionResult> GetUserById(string idUser)
         {
-            var u=iuser.GetUserByid(Id);
-            return u;
+            try
+            {
+                var u = iuser.GetUserByid(idUser);
+                if (u == null)
+                    return BadRequest("khong tim thay user");
+                Users user = await u;
+                var userViewModel = _mapper.Map<UsersVM>(user);
+                return Ok(userViewModel);
+            }
+            catch
+            {
+                return BadRequest("Lỗi");
+            }
         }
+      
 
         [HttpPost("AddUser")]
         public async Task<ActionResult> AddUser([FromForm] UsersModel userDto, IFormFile imge)
@@ -72,7 +73,7 @@ namespace UserService.Controllers
                     return BadRequest("password khong hop le");
                 }
                 var userModel = _mapper.Map<Users>(userDto);
-                iuser.AddUsersAsync(imge, userModel);
+                await iuser.AddUsers(imge, userModel);
                 return Ok("da tao user");
             }
             catch (Exception)
@@ -97,37 +98,29 @@ namespace UserService.Controllers
                 return BadRequest("khon hop le");
             }
         }
-        //[HttpPut("EditUser")]
-        //public IActionResult EditUser(UserModel users,string id)
-        //{
-        //    bool check = iuser.IsValidUser(id);
-        //    if (!check)
-        //    {
-        //        return BadRequest("Thông tin người dùng không hợp lệ");
-        //    }
-
-        //    iuser.EditUsers(users, id);
-
-        //    return Ok("Người dùng đã được tải lên thành công");
-        //}
-
-
-        [HttpDelete("{id}")]
-        public IActionResult DeleteUser(string id)
+        [HttpPut("UploadUser")]
+        public async Task<IActionResult> UploadUser(string id,[FromBody]UsersModel u)
         {
-            try
+            var user = await iuser.GetUserByid(id);
+            if (user == null)
             {
-                iuser.DeleteUsers(id);
-                
-                return Ok();
-
+                return NotFound("Khong tim thay user");
             }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-
+            _mapper.Map(u, user);
+            await iuser.UpdateUser(user);
+            return Ok("thanh cong");
         }
+
+      
+        [HttpDelete("deleteUser")]
+        public async Task<IActionResult> deleteUser(string id)
+        {
+            var result = await iuser.DeleteUser(id);
+            if (!result)
+                return NotFound();
+            return Ok("xoa thanh cong");
+        }
+
         [HttpDelete("DeleteAll")]
         public IActionResult DeleteAllUser()
         {
@@ -145,107 +138,9 @@ namespace UserService.Controllers
 
         }
 
-        [HttpPost("Login")]
-        public IActionResult Validate(LoginModel model)
-        {
-            try
-            {
-                var user = iuser.LoginUser(model.Username, model.Password);
-                
-
-                if (user == null)
-                {
-                    return Ok(new
-                    {
-                        Success = false,
-                        Message = "Invalid user/pass"
-                    });
-                }
-                return Ok(new
-                {
-                    Success = true,
-                    Message = "Authentication success",
-                    Data = iuser.GetToken(user)
-                }) ;
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-            
-        }
+       
 
 
-        //[HttpPost("upload-image")]
-        //public async Task<IActionResult> UploadImage([FromForm] IFormFile imageFile)
-        //{
-        //    if (imageFile == null)
-        //    {
-        //        return BadRequest("No image file sent");
-        //    }
-
-        //    try
-        //    {
-        //        string imageUrl = await iuser.UploadImage(imageFile);
-        //        return Ok(imageUrl);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return StatusCode(500, "An error occurred while uploading the image");
-        //    }
-        //}
-        //[HttpPost]
-        //public async Task<string> Post([FromForm] ImagesUpload imagesUpload)
-        //{
-        //    try
-        //    {
-        //        if(imagesUpload.Users.Length > 0)
-        //        {
-        //            string path = _webHostEnvironment.WebRootPath + "\\uploads\\";
-        //            if(!Directory.Exists(path))
-        //            {
-        //                Directory.CreateDirectory(path);
-
-        //            }
-        //            using(FileStream fileStream=System.IO.File.Create(path+ imagesUpload.files.FileName))
-        //            {
-        //                imagesUpload.files.CopyTo(fileStream);
-        //                fileStream.Flush();
-        //                return "Upload done";
-
-        //            }    
-        //        }
-        //        else
-        //        {
-        //            return "Failed";
-        //        }    
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //       return "Failed";
-        //    }
-        //}
-
-
-        //[HttpGet("LayHinh")]
-        //public IActionResult Get([FromRoute] string imgname)
-        //{
-        //    try
-        //    {
-        //        string path = _webHostEnvironment.WebRootPath + "\\uploads\\";
-        //        var filePath = path + imgname + ".png";
-        //        if (System.IO.File.Exists(filePath))
-        //        {
-        //            byte[] b = System.IO.File.ReadAllBytes("filePath");
-        //            return File(b, "image/png");
-        //        }
-        //        return NotFound();
-        //    }
-        //    catch(Exception ex)
-        //    {
-        //        return BadRequest("Loi");
-        //    }
-
-        //}
+        
     }
 }

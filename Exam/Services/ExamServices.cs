@@ -110,15 +110,7 @@ namespace ExamService.Services
             throw new NotImplementedException();
         }
 
-        public Task<Exams> EditNameExam(string id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void EditQuestion(string id)
-        {
-            throw new NotImplementedException();
-        }
+     
 
         public List<Exams> GetExams()
         {

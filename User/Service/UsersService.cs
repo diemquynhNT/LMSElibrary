@@ -52,36 +52,31 @@ namespace UserService.Service
             return isValid;
         }
 
-      
 
-       
-
-        public void DeleteUsers(string id)
+        public async Task<Users> UpdateUser(Users u)
         {
-            var us = _context.users.SingleOrDefault(t => t.IdUser == id);
-            if (us != null)
-            {
-                _context.Remove(us);
-                _context.SaveChanges();
-            }
+            _context.users.Update(u);
+            await _context.SaveChangesAsync();
+            return u;
         }
 
-        
 
-        //public async Task<UserModel> EditUsers(UserModel us, string id)
-        //{
-        //    Users users = _context.users.Where(t => t.IdUser == id).FirstOrDefault();
-        //    users.Nameus = us.Nameus;
-        //    users.Email = us.Email;
-        //    users.Numphone = us.Numphone;
-        //    users.Username = us.Username;
-        //    users.Password = us.Password;
-        //    users.Address = us.Address;
-        //    _context.Add(users);
-        //    await _context.SaveChangesAsync();
 
-        //    return us;
-        //}
+        public async Task<bool> DeleteUser(string id)
+        {
+            var u = await _context.users.FindAsync(id);
+            if (u == null)
+                return false;
+
+            _context.users.Remove(u);
+            await _context.SaveChangesAsync();
+
+            return true;
+        }
+
+
+
+
 
         public async Task<IEnumerable<Users>> GetAllUsers()
         {
@@ -114,8 +109,6 @@ namespace UserService.Service
             {
                 Directory.CreateDirectory(imagePath);
             }
-
-           
             var uniqueFileName = DateTime.Now.Ticks + "_" + imageFile.FileName;
 
             var filePath = Path.Combine(imagePath, uniqueFileName);
@@ -147,24 +140,17 @@ namespace UserService.Service
             return await _context.positions.Where(x => x.IdPos == id).FirstOrDefaultAsync();
         }
 
-        public async Task AddPos(PositionModel pos)
+        public async Task<Position> AddPos(Position pos)
         {
-            Position p = new Position();
-            p.NamePos = pos.NamePos;
-            p.Mota=pos.Mota;
-            _context.Add(p);
+            _context.Add(pos);
             await _context.SaveChangesAsync();
+            return pos;
 
         }
 
-        public async Task<PositionModel> EditPos(PositionModel p, string id)
+        public async Task<Position> EditPos(Position p)
         {
-            var position = _context.positions.SingleOrDefault(t => t.IdPos == id);
-            if (position == null)
-                return null;
-            position.Mota = p.Mota;
-            position.NamePos = p.NamePos;
-            _context.Add(position);
+            _context.positions.Update(p);
             await _context.SaveChangesAsync();
             return p;
            
@@ -223,7 +209,7 @@ namespace UserService.Service
 
         }
 
-        public async Task AddUsersAsync(IFormFile imge, Users us)
+        public async Task<Users> AddUsers(IFormFile imge, Users us)
         {
             Random rd = new Random();
             var keypos = "";
@@ -251,6 +237,7 @@ namespace UserService.Service
             }
             _context.Add(us);
             await _context.SaveChangesAsync();
+            return us;
         }
 
         public void DeleteAllUser()
@@ -269,6 +256,8 @@ namespace UserService.Service
             var token = GenerateToken(user);
             return token;
         }
+
+       
     }
     }
 

@@ -10,10 +10,10 @@ namespace UserService.Service
         public Task<IEnumerable<Users>> GetAllUsers();
         public Task<Users> GetUserByid(string id);
 
-        public Task AddUsersAsync(IFormFile imge,Users us);
-        //public Task<UserModel> EditUsers(UserModel us, string id);
+        public Task<Users> AddUsers(IFormFile imge,Users us);
+        public Task<Users> UpdateUser(Users u);
 
-        public void DeleteUsers(string id);
+        public Task<bool> DeleteUser(string id);
         public void DeleteAllUser();
 
         public Task<string> UploadImage(IFormFile imageFile);
@@ -21,15 +21,14 @@ namespace UserService.Service
         public bool ChangePassword(string userId, UserPasswordVM us);
         public bool ValidatePassword(string password);
         public bool IsValidUser(string id);
-
         public Users LoginUser(string username, string password);
         public string GetToken(Users user);
 
         //pos
         public Task<IEnumerable<Position>> GetAllPost();
         public Task<Position> GetPosById(string id);
-        public Task AddPos(PositionModel pos);
-        public Task<PositionModel> EditPos(PositionModel us, string id);
+        public Task<Position> AddPos(Position pos);
+        public Task<Position> EditPos(Position us);
         public void DeletePos(string id);
 
     }
