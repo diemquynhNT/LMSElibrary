@@ -1,4 +1,5 @@
-﻿using ExamService.Data;
+﻿using DocumentFormat.OpenXml.Office2010.Excel;
+using ExamService.Data;
 using ExamService.Model;
 using Microsoft.EntityFrameworkCore;
 using OfficeOpenXml;
@@ -92,6 +93,18 @@ namespace ExamService.Services
             return true;
         }
 
+        public async Task<bool> DeletExamAndQuestions(string idex, string idQues)
+        {
+            var t = await _context.detailExams.FindAsync(idex, idQues);
+            if (t == null)
+                return false;
+
+            _context.detailExams.Remove(t);
+            await _context.SaveChangesAsync();
+
+            return true;
+        }
+
         public Task DownloadEXamById(string id)
         {
             throw new NotImplementedException();
@@ -121,9 +134,9 @@ namespace ExamService.Services
            return _context.detailExams.Where(t => t.IdExam == id).ToList();
         }
 
-        public Questions GetDetailQuestions(string id)
+        public Task<Questions> GetDetailQuestions(string id)
         {
-            return _context.questions.Where(t => t.IdQuestion == id).FirstOrDefault();
+            return _context.questions.Where(t => t.IdQuestion == id).FirstOrDefaultAsync();
         }
 
         public async Task<bool> VerifySubjectExists(string idsubject)
@@ -145,10 +158,17 @@ namespace ExamService.Services
         {
             return _context.questions.ToList();
         }
+        public async Task<Questions> UpdateQuestion(Questions objQues)
+        {
+            _context.questions.Update(objQues);
+            await _context.SaveChangesAsync();
+            return objQues;
+        }
 
-        public async Task<List<Questions>> ImportDocument(IFormFile file)
+            public async Task<List<Questions>> ImportDocument(IFormFile file)
         {
             var list = new List<Questions>();
+           
             using (var stream = new MemoryStream())
             {
                 await file.CopyToAsync(stream);
@@ -179,6 +199,8 @@ namespace ExamService.Services
                 return list;
             }
         }
+
+       
         //public void ImportDocument(IFormFile file)
         //{
         //    List<Questions> questionsList = new List<Questions>();

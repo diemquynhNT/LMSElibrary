@@ -90,16 +90,6 @@ namespace SubjectService.Service
             }
         }
 
-        //public async Task EditDocument(string title, string iddoc, string idtopic)
-        //{
-        //    var tp = _dbContext.baiGiangs.Where(t => t.IdChuDe == idtopic && t.IdBaiGiang == iddoc).FirstOrDefault();
-        //    if (title != null)
-        //    {
-        //        tp.TitleBaiGiang = title;
-        //        await _dbContext.SaveChangesAsync();
-
-        //    }
-        //}
 
         public async Task EditTopic(string nametopic, string id, string idtopic)
         {
@@ -112,10 +102,7 @@ namespace SubjectService.Service
             }    
         }
 
-        //public List<Lop> GetClassForTeacher(string id, string idgv)
-        //{
-        //    return _dbContext.Lops.Where(t => t.IdMonHoc == id).ToList();
-        //}
+       
 
         public List<Lectures> GetLectures(string id)
         {

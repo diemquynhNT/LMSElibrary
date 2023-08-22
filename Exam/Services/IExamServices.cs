@@ -14,6 +14,7 @@ namespace ExamService.Services
         public Task<Exams> GetExamsById(string id);
         public Task<Exams> EditNameExam(string id);
         public Task<bool> DeleteExam(string id);
+        public Task<bool> DeletExamAndQuestions(string idex,string idQues);
         public string AddExam(string idteacher,string status,Exams exams);
         public Task<bool>VerifySubjectExists(string idsubject);
 
@@ -25,9 +26,9 @@ namespace ExamService.Services
 
         //thêm question bằng excel
         public Task<List<Questions>> ImportDocument(IFormFile file);
-        public Questions GetDetailQuestions(string id);
-        public void EditQuestion(string id);
-        public void DeleteQuestion(string id);
+        public Task<Questions> GetDetailQuestions(string id);
+        public Task<Questions> UpdateQuestion(Questions objQues);
+        public Task<bool> DeleteQuestion(string id);
        
 
         
