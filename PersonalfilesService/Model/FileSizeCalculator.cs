@@ -1,4 +1,4 @@
-﻿namespace PersonalfilesService.Data
+﻿namespace PersonalfilesService.Model
 {
     public class FileSizeCalculator
     {

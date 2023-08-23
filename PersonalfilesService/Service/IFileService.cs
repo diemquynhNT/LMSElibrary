@@ -6,11 +6,11 @@ namespace PersonalfilesService.Service
 {
     public interface IFileService
     {
-        public Task PostFileAsync(IFormFile fileData, FileType fileType);
-
-        public Task PostMultiFileAsync(List<FileUploadModel> fileData);
-
-        public Task DownloadFileById(int id);
-        public Task DeleteFileById(int id);
+        //public List<FileDetails> GetAlFile();
+        //public Task<FileDetails> EditFile();
+        //public Task PostFileAsync(IFormFile fileData);
+        //public Task PostMultiFileAsync(List<FileUploadModel> fileData);
+        //public Task DownloadFileById(int id);
+        //public Task DeleteFileById(int id);
     }
 }

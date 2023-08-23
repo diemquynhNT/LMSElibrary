@@ -16,24 +16,24 @@ namespace PersonalfilesService.Controllers
             _uploadService = uploadService;
         }
 
-        [HttpPost("PostSingleFile")]
-        public async Task<ActionResult> PostSingleFile([FromForm] FileUploadModel fileDetails)
-        {
-            if (fileDetails == null)
-            {
-                return BadRequest();
-            }
+        //[HttpPost("PostSingleFile")]
+        //public async Task<ActionResult> PostSingleFile([FromForm] FileUploadModel fileDetails)
+        //{
+        //    if (fileDetails == null)
+        //    {
+        //        return BadRequest();
+        //    }
 
-            try
-            {
-                await _uploadService.PostFileAsync(fileDetails.FileDetails, fileDetails.fileTypes);
-                return Ok();
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-        }
+        //    try
+        //    {
+        //        //await _uploadService.PostFileAsync(fileDetails.FileDetails, fileDetails.fileTypes);
+        //        return Ok();
+        //    }
+        //    catch (Exception)
+        //    {
+        //        throw;
+        //    }
+        //}
         [HttpGet("DownloadFile")]
         public async Task<ActionResult> DownloadFile(int id)
         {
@@ -44,7 +44,7 @@ namespace PersonalfilesService.Controllers
 
             try
             {
-                await _uploadService.DownloadFileById(id);
+                //await _uploadService.DownloadFileById(id);
                 return Ok();
             }
             catch (Exception)
@@ -63,7 +63,7 @@ namespace PersonalfilesService.Controllers
 
             try
             {
-                await _uploadService.DeleteFileById(id);
+                //await _uploadService.DeleteFileById(id);
                 return Ok();
             }
             catch (Exception)
