@@ -1,9 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PersonalfilesService.Model
 {
-    [Table("FileDetails")]
     public class FileDetails
     {
         [Key]
@@ -17,6 +15,8 @@ namespace PersonalfilesService.Model
         public DateTime Datecreated { get; set; }
         public string SizeFile { get; set; }
         public string FileURL { get; set; }
-       // public FileType Filetypes { get; set; }
+        [Required]
+        [MaxLength(100)]
+        public string Filetypes { get; set; }
     }
 }

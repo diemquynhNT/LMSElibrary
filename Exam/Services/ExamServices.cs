@@ -192,7 +192,12 @@ namespace ExamService.Services
             }
         }
 
-       
+        public Task<Exams> EditNameExam(string id)
+        {
+            throw new NotImplementedException();
+        }
+
+
         //public void ImportDocument(IFormFile file)
         //{
         //    List<Questions> questionsList = new List<Questions>();

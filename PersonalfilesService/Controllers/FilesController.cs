@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using PersonalfilesService.Model;
 using PersonalfilesService.Service;
+using System;
 
 namespace PersonalfilesService.Controllers
 {
@@ -15,36 +16,30 @@ namespace PersonalfilesService.Controllers
         {
             _uploadService = uploadService;
         }
-
-        //[HttpPost("PostSingleFile")]
-        //public async Task<ActionResult> PostSingleFile([FromForm] FileUploadModel fileDetails)
-        //{
-        //    if (fileDetails == null)
-        //    {
-        //        return BadRequest();
-        //    }
-
-        //    try
-        //    {
-        //        //await _uploadService.PostFileAsync(fileDetails.FileDetails, fileDetails.fileTypes);
-        //        return Ok();
-        //    }
-        //    catch (Exception)
-        //    {
-        //        throw;
-        //    }
-        //}
-        [HttpGet("DownloadFile")]
-        public async Task<ActionResult> DownloadFile(int id)
+        [HttpGet]
+        public List<FileDetails> Get()
         {
-            if (id < 1)
+            try
+            {
+                List<FileDetails> fls = _uploadService.GetAlFile();
+                return fls; 
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+        [HttpPost("PostSingleFile")]
+        public async Task<ActionResult> PostSingleFile(string IdUser,IFormFile fileDetails)
+        {
+            if (fileDetails == null)
             {
                 return BadRequest();
             }
 
             try
             {
-                //await _uploadService.DownloadFileById(id);
+                await _uploadService.PostFileAsync(IdUser,fileDetails);
                 return Ok();
             }
             catch (Exception)
@@ -52,18 +47,42 @@ namespace PersonalfilesService.Controllers
                 throw;
             }
         }
+        [HttpGet("download")]
+        public async Task<IActionResult> DownloadAttachment(int id)
+        {
+            var i = await _uploadService.GetFileById(id);
+            var path = Path.Combine(
+               Directory.GetCurrentDirectory(), "wwwroot\\uploads\\",i.FileName );
+            byte[] fileBytes = System.IO.File.ReadAllBytes(path);
+            return File(fileBytes, "application/x-msdownload", i.FileName);
+        }
+        //[HttpGet("DownloadFile")]
+        //public async Task<ActionResult> DownloadFile(int id)
+        //{
+        //    if (id < 1)
+        //    {
+        //        return BadRequest();
+        //    }
+
+        //    try
+        //    {
+        //        await _uploadService.DownloadFileById(id);
+        //        return Ok();
+        //    }
+        //    catch (Exception)
+        //    {
+        //        throw;
+        //    }
+        //}
 
         [HttpDelete("DeleteFile")]
         public async Task<ActionResult> DeleteFile(int id)
         {
-            if (id < 1)
-            {
-                return BadRequest();
-            }
-
             try
             {
-                //await _uploadService.DeleteFileById(id);
+                var check=await _uploadService.DeleteFileById(id);
+                if (!check)
+                    return BadRequest();
                 return Ok();
             }
             catch (Exception)
