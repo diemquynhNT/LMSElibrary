@@ -17,11 +17,12 @@ namespace SubjectService.Model
         public string? IdTopic { get; set; }
         public Topic topics { get; set; }
 
-        public virtual ICollection<DetailLectures> detailLectures { get; set; }
+        public virtual ICollection<ClassAssignment> detailLectures { get; set; }
+        public virtual ICollection<Questions> Questions { get; set; }
         // khi tạo có thể null ctdh
         public Lectures()
         {
-            detailLectures = new HashSet<DetailLectures>();
+            detailLectures = new HashSet<ClassAssignment>();
         }
         public virtual ICollection<Resources> resources { get; set; }
 

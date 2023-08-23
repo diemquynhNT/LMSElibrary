@@ -22,6 +22,28 @@ namespace SubjectService.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
+            modelBuilder.Entity("SubjectService.Model.ClassAssignment", b =>
+                {
+                    b.Property<string>("IdPC")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("IdClass")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("IdLectures")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("IdPC");
+
+                    b.HasIndex("IdClass");
+
+                    b.HasIndex("IdLectures");
+
+                    b.ToTable("classAssignments");
+                });
+
             modelBuilder.Entity("SubjectService.Model.ClassList", b =>
                 {
                     b.Property<string>("IdClassList")
@@ -44,9 +66,6 @@ namespace SubjectService.Migrations
                 {
                     b.Property<string>("IdClass")
                         .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("IdTeacher")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("NameClass")
                         .IsRequired()
@@ -81,26 +100,14 @@ namespace SubjectService.Migrations
                     b.Property<string>("IdSubject")
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<string>("IdTeacher")
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("IdClass", "IdSubject");
 
                     b.HasIndex("IdSubject");
 
                     b.ToTable("detailClasses");
-                });
-
-            modelBuilder.Entity("SubjectService.Model.DetailLectures", b =>
-                {
-                    b.Property<string>("IdClass")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("IdLectures")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("IdClass", "IdLectures");
-
-                    b.HasIndex("IdLectures");
-
-                    b.ToTable("detailLectures");
                 });
 
             modelBuilder.Entity("SubjectService.Model.Lectures", b =>
@@ -129,6 +136,44 @@ namespace SubjectService.Migrations
                     b.HasIndex("IdTopic");
 
                     b.ToTable("Lectures");
+                });
+
+            modelBuilder.Entity("SubjectService.Model.Questions", b =>
+                {
+                    b.Property<string>("IdQuestions")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("ContentQuestion")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("DateCreate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("Favorite")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("IdPC")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("IdUser")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LecturesIdLecture")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("IdQuestions");
+
+                    b.HasIndex("IdPC");
+
+                    b.HasIndex("LecturesIdLecture");
+
+                    b.ToTable("questions");
                 });
 
             modelBuilder.Entity("SubjectService.Model.Resources", b =>
@@ -243,6 +288,27 @@ namespace SubjectService.Migrations
                     b.ToTable("topics");
                 });
 
+            modelBuilder.Entity("SubjectService.Model.ClassAssignment", b =>
+                {
+                    b.HasOne("SubjectService.Model.ClassSubject", "classSubjects")
+                        .WithMany("detailLectures")
+                        .HasForeignKey("IdClass")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK_ctbg_lop");
+
+                    b.HasOne("SubjectService.Model.Lectures", "lectures")
+                        .WithMany("detailLectures")
+                        .HasForeignKey("IdLectures")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK_ctbaigiang_baigiang");
+
+                    b.Navigation("classSubjects");
+
+                    b.Navigation("lectures");
+                });
+
             modelBuilder.Entity("SubjectService.Model.ClassList", b =>
                 {
                     b.HasOne("SubjectService.Model.ClassSubject", "classSubject")
@@ -274,27 +340,6 @@ namespace SubjectService.Migrations
                     b.Navigation("subject");
                 });
 
-            modelBuilder.Entity("SubjectService.Model.DetailLectures", b =>
-                {
-                    b.HasOne("SubjectService.Model.ClassSubject", "classSubjects")
-                        .WithMany("detailLectures")
-                        .HasForeignKey("IdClass")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("FK_ctbg_lop");
-
-                    b.HasOne("SubjectService.Model.Lectures", "lectures")
-                        .WithMany("detailLectures")
-                        .HasForeignKey("IdLectures")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("FK_ctbaigiang_baigiang");
-
-                    b.Navigation("classSubjects");
-
-                    b.Navigation("lectures");
-                });
-
             modelBuilder.Entity("SubjectService.Model.Lectures", b =>
                 {
                     b.HasOne("SubjectService.Model.ClassSubject", null)
@@ -307,6 +352,20 @@ namespace SubjectService.Migrations
                         .HasConstraintName("FK_baigiang_chude");
 
                     b.Navigation("topics");
+                });
+
+            modelBuilder.Entity("SubjectService.Model.Questions", b =>
+                {
+                    b.HasOne("SubjectService.Model.ClassAssignment", "classAssignment")
+                        .WithMany("Questions")
+                        .HasForeignKey("IdPC")
+                        .HasConstraintName("FK_cauhoi_baigiang");
+
+                    b.HasOne("SubjectService.Model.Lectures", null)
+                        .WithMany("Questions")
+                        .HasForeignKey("LecturesIdLecture");
+
+                    b.Navigation("classAssignment");
                 });
 
             modelBuilder.Entity("SubjectService.Model.Resources", b =>
@@ -349,6 +408,11 @@ namespace SubjectService.Migrations
                     b.Navigation("subjects");
                 });
 
+            modelBuilder.Entity("SubjectService.Model.ClassAssignment", b =>
+                {
+                    b.Navigation("Questions");
+                });
+
             modelBuilder.Entity("SubjectService.Model.ClassSubject", b =>
                 {
                     b.Navigation("detailClass");
@@ -367,6 +431,8 @@ namespace SubjectService.Migrations
 
             modelBuilder.Entity("SubjectService.Model.Lectures", b =>
                 {
+                    b.Navigation("Questions");
+
                     b.Navigation("detailLectures");
 
                     b.Navigation("resources");

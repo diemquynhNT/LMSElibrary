@@ -16,9 +16,10 @@ namespace SubjectService.Data
         public DbSet<Lectures> lectures { get; set; }
         public DbSet<Resources> Resources { get; set; }
         public DbSet<ClassList> classLists { get; set; }
-        public DbSet<DetailLectures> detailLectures { get; set; }
+        public DbSet<ClassAssignment> classAssignments { get; set; }
         public DbSet<DetailClass> detailClasses { get; set; }
         public DbSet<SubjectInfo> subjectInfos { get; set; }
+        public DbSet<Questions> questions { get; set; }
         #endregion
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -60,6 +61,16 @@ namespace SubjectService.Data
                
             });
 
+            modelBuilder.Entity<Questions>(q =>
+            {
+                q.HasOne(e => e.classAssignment).
+                   WithMany(e => e.Questions)
+                  .HasConstraintName("FK_cauhoi_baigiang")
+                  .HasForeignKey(e => e.IdPC);
+
+
+            });
+
             modelBuilder.Entity<Resources>(tp =>
             {
 
@@ -84,10 +95,8 @@ namespace SubjectService.Data
                .HasForeignKey(e => e.IdClass);
             });
 
-            modelBuilder.Entity<DetailLectures>(ct =>
+            modelBuilder.Entity<ClassAssignment>(ct =>
             {
-                ct.HasKey(t => new { t.IdClass, t.IdLectures });
-
                 ct.HasOne(e => e.lectures).
                    WithMany(e => e.detailLectures)
                   .HasConstraintName("FK_ctbaigiang_baigiang")

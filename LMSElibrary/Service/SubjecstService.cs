@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using SubjectService.Data;
 using SubjectService.Dto;
@@ -19,45 +20,66 @@ namespace SubjectService.Service
             _webHostEnvironment = webHostEnvironment;
 
         }
-       
-
-        public async Task AddVideo(IFormFile videoFile, string id)
+        public List<Lectures> GetLectures(string id)
         {
-            var tn = new Resources();
-            tn.IdResources = Guid.NewGuid().ToString();
-            tn.StatusFile = false;
-            tn.DateSent = DateTime.Now;
-            tn.IdLecture = id;
-
-            if (videoFile == null || videoFile.Length == 0)
-            {
-                throw new ArgumentException("No file selected");
-            }
-
-            if (videoFile.ContentType != "video/mp4")
-            {
-                throw new ArgumentException("Invalid file type");
-            }
-
-            string path = _webHostEnvironment.WebRootPath + "\\uploads\\";
-            if (!Directory.Exists(path))
-            {
-                Directory.CreateDirectory(path);
-
-            }
-            using (FileStream fileStream = System.IO.File.Create(path + videoFile.FileName))
-            {
-                videoFile.CopyTo(fileStream);
-                fileStream.Flush();
-                tn.FormatFile = videoFile.ContentType;
-                tn.FileURL = videoFile.FileName;
-
-            }
-           
-            _dbContext.Add(tn);
-            await _dbContext.SaveChangesAsync();
+            return _dbContext.lectures.Where(t => t.IdTopic == id).ToList();
         }
 
+        public async Task<Subject> GetSubjectByIdAsync(string id)
+        {
+            return await _dbContext.subjects.Where(x => x.IdSubject == id).FirstOrDefaultAsync();
+        }
+
+        public async Task<Subject> GetSubjectByName(string id)
+        {
+            return await _dbContext.subjects.Where(x => x.NameSubject == id).FirstOrDefaultAsync();
+        }
+
+        public List<Subject> GetAllSubject()
+        {
+            return _dbContext.subjects.ToList();
+        }
+        public List<Resources> GetAllResources()
+        {
+            return _dbContext.Resources.ToList();
+        }
+        public List<Subject> GetAllSubjectForTeacher(string idTeacher)
+        {
+            List<DetailClass> list = _dbContext.detailClasses.Where(t => t.IdTeacher == idTeacher).ToList();
+            List<Subject> result = new List<Subject>();
+            foreach (var item in list)
+            {
+                var detail = _dbContext.subjects.FirstOrDefault(t => t.IdSubject == item.IdSubject);
+                result.Add(detail);
+
+            }
+            return result;
+        }
+        public List<ClassSubject> GetAllClassForTeacher(string idTeacher, string idSubject)
+        {
+            List<DetailClass> list = _dbContext.detailClasses.Where(t => t.IdTeacher == idTeacher && t.IdSubject==idSubject).ToList();
+            List<ClassSubject> result = new List<ClassSubject>();
+            foreach (var item in list)
+            {
+                var detail = _dbContext.classSubjects.FirstOrDefault(t => t.IdClass == item.IdClass);
+                result.Add(detail);
+
+            }
+            return result;
+        }
+
+        public List<Topic> GetTopicsSubject(string id)
+        {
+            return _dbContext.topics.Where(t => t.IdSubject == id).ToList();
+        }
+
+        public List<Resources> GetVideo()
+        {
+            return _dbContext.Resources.Where(t => t.FormatFile == "video/mp4").ToList();
+
+        }
+
+      
         public async Task AddTopic(string nametopic, string id)
         {
                 Random rd = new Random();
@@ -103,94 +125,48 @@ namespace SubjectService.Service
         }
 
        
-
-        public List<Lectures> GetLectures(string id)
+       
+        //Lectures
+        public async Task<string> AddLecture(Lectures lectures)
         {
-            return _dbContext.lectures.Where(t => t.IdTopic == id).ToList();
+           Random rd=new Random();
+            lectures.IdLecture="BG"+rd.Next(1,9)+rd.Next(10,99);
+            _dbContext.Add(lectures);
+            await _dbContext.SaveChangesAsync();
+            return lectures.IdLecture;
         }
-
-        public async Task<Subject> GetSubjectByIdAsync(string id)
+        public async Task<Resources> AddLecturesVideo(IFormFile videoFile, string id)
         {
-            return await _dbContext.subjects.Where(x => x.IdSubject == id).FirstOrDefaultAsync();
-        }
-
-        public async Task<Subject> GetSubjectByName(string id)
-        {
-            return await _dbContext.subjects.Where(x => x.NameSubject == id).FirstOrDefaultAsync();
-        }
-
-        
-
-        public List<Subject> GetSubjectListAsync()
-        {
-            return _dbContext.subjects.ToList();
-        }
-
-
-        public List<Topic> GetTopicsSubject(string id)
-        {
-            return _dbContext.topics.Where(t=>t.IdSubject==id).ToList();
-        }
-
-        public List<Resources> GetVideo()
-        {
-            return _dbContext.Resources.Where(t=>t.FormatFile == "video/mp4").ToList();
-            
-        }
-
-        public void DeleteResource (string id)
-        {
-            var video = _dbContext.Resources.SingleOrDefault(t => t.IdResources==id);
-            if (video != null)
-            {
-                _dbContext.Remove(video);
-                _dbContext.SaveChanges();
-            }
-        }
-
-        public async Task AddFile(IFormFile filedetail, string id)
-        {
-            var tn = new Resources();
-            tn.IdResources = Guid.NewGuid().ToString();
-            tn.StatusFile = false;
-            tn.DateSent = DateTime.Now;
-            tn.IdLecture = id;
-
-            if (filedetail == null || filedetail.Length == 0)
+            var res = new Resources();
+            Random rd = new Random();
+            res.IdResources = "TN"+rd.Next(1,9)+rd.Next(10,99);
+            res.StatusFile = false;
+            res.DateSent = DateTime.Now;
+            res.IdLecture = id;
+            if (videoFile == null || videoFile.Length == 0)
             {
                 throw new ArgumentException("No file selected");
             }
-
-
+            if (videoFile.ContentType != "video/mp4")
+            {
+                throw new ArgumentException("Invalid file type");
+            }
             string path = _webHostEnvironment.WebRootPath + "\\uploads\\";
             if (!Directory.Exists(path))
             {
                 Directory.CreateDirectory(path);
 
             }
-            using (FileStream fileStream = System.IO.File.Create(path + filedetail.FileName))
+            using (FileStream fileStream = System.IO.File.Create(path + videoFile.FileName))
             {
-                filedetail.CopyTo(fileStream);
+                videoFile.CopyTo(fileStream);
                 fileStream.Flush();
-                tn.FormatFile = filedetail.ContentType;
-                tn.FileURL = filedetail.FileName;
-
+                res.FormatFile = videoFile.ContentType;
+                res.FileURL = videoFile.FileName;
             }
-
-            _dbContext.Add(tn);
+            _dbContext.Add(res);
             await _dbContext.SaveChangesAsync();
-        }
-
-        public async Task<string> AddLecture(string title,string id,string des)
-        {
-            var l = new Lectures();
-            l.IdLecture = Guid.NewGuid().ToString();
-            l.TitleLecture = title;
-            l.Describe = des;
-            l.IdTopic = id;
-            _dbContext.Add(l);
-            await _dbContext.SaveChangesAsync();
-            return l.IdLecture;
+            return res;
         }
 
         public Task PhanCongTL(IFormFile filedetail, string id)
@@ -208,11 +184,92 @@ namespace SubjectService.Service
             }    
         }
 
-        public List<Resources> GetResources()
+        //Resource
+        public async Task<Resources> AddFileResource(IFormFile filedetail, string id)
         {
-           return _dbContext.Resources.ToList();
+            var res = new Resources();
+            Random rd = new Random();
+            res.IdResources = "TN" + rd.Next(1, 9) + rd.Next(10, 99);
+            res.StatusFile = false;
+            res.DateSent = DateTime.Now;
+            res.IdLecture = id;
+
+            if (filedetail == null || filedetail.Length == 0)
+            {
+                throw new ArgumentException("No file selected");
+            }
+
+
+            string path = _webHostEnvironment.WebRootPath + "\\uploads\\";
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+
+            }
+            using (FileStream fileStream = System.IO.File.Create(path + filedetail.FileName))
+            {
+                filedetail.CopyTo(fileStream);
+                fileStream.Flush();
+                res.FormatFile = filedetail.ContentType;
+                res.FileURL = filedetail.FileName;
+
+            }
+
+            _dbContext.Add(res);
+            await _dbContext.SaveChangesAsync();
+            return res;
         }
 
-       
+        public Task<Resources> DetailResource(string id)
+        {
+            return _dbContext.Resources.Where(t => t.IdResources == id).FirstOrDefaultAsync();
+        }
+        public Task<Resources> GetResourceByName(string name)
+        {
+            return _dbContext.Resources.Where(t => t.FileURL == name).FirstOrDefaultAsync();
+        }
+        public void DeleteResource(string id)
+        {
+            var video = _dbContext.Resources.SingleOrDefault(t => t.IdResources == id);
+            if (video != null)
+            {
+                _dbContext.Remove(video);
+                _dbContext.SaveChanges();
+            }
+        }
+
+        List<Resources> ISubjectService.GetResourceByName(string name)
+        {
+            throw new NotImplementedException();
+        }
+        //Questions
+        #region
+        public List<Questions> GetAllQuestionForLectures(string idLec)
+        {
+            List<ClassAssignment> list=_dbContext.classAssignments.Where(t=>t.IdLectures == idLec).ToList();
+            List<Questions> ques = new List<Questions>();
+            foreach(var item in list)
+            {
+                var question = _dbContext.questions.Where(t => t.IdPC == item.IdPC).FirstOrDefault();
+                ques.Add(question);
+            }
+            return ques;
+        }
+
+        public Task<Questions> AddQuestions(Questions ques)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<Questions> EditQuestions(Questions ques)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<bool> DeleteQuestion(string id)
+        {
+            throw new NotImplementedException();
+        }
+        #endregion
     }
 }

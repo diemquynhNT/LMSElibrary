@@ -10,47 +10,67 @@ namespace SubjectService.Controllers
     [ApiController]
     public class SubjectsController : ControllerBase
     {
-        private readonly ISubjectService isp;
+        private readonly ISubjectService _context;
 
-        public SubjectsController(ISubjectService _isp)
+        public SubjectsController(ISubjectService context)
         {
-            isp = _isp;
+            _context = context;
         }
 
-        [HttpGet("list")]
-        public List<Subject> SubjectListAsync()
+        [HttpGet("ListAllSubject")]
+        public List<Subject> ListAllSubject()
         {
-                var subjectList = isp.GetSubjectListAsync();
-                return subjectList;
+            var subjectList = _context.GetAllSubject();
+            return subjectList;
         }
-        [HttpGet("DetailSubject")]
-        public Task<Subject> GetSubjectByIdAsync(string Id)
+
+        [HttpGet("ListSubjectForTeacher")]
+        public List<Subject> ListSubjectForTeacher(string idTeacher)
         {
-            return isp.GetSubjectByIdAsync(Id);
+            var subjectList = _context.GetAllSubjectForTeacher(idTeacher);
+            return subjectList;
         }
 
 
-
-
-        [HttpGet("SearchSubject")]
-        public async Task<ActionResult<Subject>> SearchSubject(string keyword)
+        [HttpGet("ListClassForTeacher")]
+        public List<ClassSubject> ListClassForTeacher(string idTeacher,string idSubject)
         {
-            try
-            {
-                var sub = await isp.GetSubjectByIdAsync(keyword);
-                if (sub != null)
-                {
-                    return sub;
-                }
-                return BadRequest("Lỗi");
-            }
-            catch
-            {
-                return BadRequest("Lỗi");
-            }
+            var classList = _context.GetAllClassForTeacher(idTeacher,idSubject);
+            return classList;
         }
 
+      
+
+        //[HttpGet("DetailSubject")]
+        //public Task<Subject> GetSubjectByIdAsync(string Id)
+        //{
+        //    return isp.GetSubjectByIdAsync(Id);
+        //}
 
 
-        }
+
+
+
+
+        //[HttpGet("SearchSubject")]
+        //public async Task<ActionResult<Subject>> SearchSubject(string keyword)
+        //{
+        //    try
+        //    {
+        //        var sub = await isp.GetSubjectByIdAsync(keyword);
+        //        if (sub != null)
+        //        {
+        //            return sub;
+        //        }
+        //        return BadRequest("Lỗi");
+        //    }
+        //    catch
+        //    {
+        //        return BadRequest("Lỗi");
+        //    }
+        //}
+
+
+
+    }
 }
