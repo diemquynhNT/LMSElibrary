@@ -20,11 +20,15 @@ namespace SubjectService.Service
             _webHostEnvironment = webHostEnvironment;
 
         }
-        public List<Lectures> GetLectures(string id)
-        {
-            return _dbContext.lectures.Where(t => t.IdTopic == id).ToList();
-        }
 
+        public string RandomId(string keyword)
+        {
+            Random rd = new Random();
+            var id = keyword + rd.Next(1, 9) + rd.Next(10, 99);
+            return id;
+        }
+        //Subject
+        #region
         public async Task<Subject> GetSubjectByIdAsync(string id)
         {
             return await _dbContext.subjects.Where(x => x.IdSubject == id).FirstOrDefaultAsync();
@@ -39,10 +43,11 @@ namespace SubjectService.Service
         {
             return _dbContext.subjects.ToList();
         }
-        public List<Resources> GetAllResources()
+        public List<Department> GetAllDepartment()
         {
-            return _dbContext.Resources.ToList();
+            return _dbContext.departments.ToList();
         }
+
         public List<Subject> GetAllSubjectForTeacher(string idTeacher)
         {
             List<DetailClass> list = _dbContext.detailClasses.Where(t => t.IdTeacher == idTeacher).ToList();
@@ -55,18 +60,35 @@ namespace SubjectService.Service
             }
             return result;
         }
-        public List<ClassSubject> GetAllClassForTeacher(string idTeacher, string idSubject)
-        {
-            List<DetailClass> list = _dbContext.detailClasses.Where(t => t.IdTeacher == idTeacher && t.IdSubject==idSubject).ToList();
-            List<ClassSubject> result = new List<ClassSubject>();
-            foreach (var item in list)
-            {
-                var detail = _dbContext.classSubjects.FirstOrDefault(t => t.IdClass == item.IdClass);
-                result.Add(detail);
 
-            }
-            return result;
+        public async Task<Subject> AddSubject(Subject subject)
+        {
+            subject.IdSubject = RandomId("MH");
+            _dbContext.Add(subject);
+            _dbContext.SaveChanges();
+            return subject;
         }
+
+        public async Task<Subject> UpdateSubject(Subject subject)
+        {
+            _dbContext.subjects.Update(subject);
+            await _dbContext.SaveChangesAsync();
+            return subject;
+        }
+
+        public async Task<bool> DeleteSubject(string id)
+        {
+            var l = _dbContext.classSubjects.SingleOrDefault(t => t.IdClass == id);
+            if (l != null)
+            {
+                _dbContext.Remove(l);
+                _dbContext.SaveChanges();
+                return true;
+            }
+            return false;
+        }
+
+        #endregion
 
         public List<Topic> GetTopicsSubject(string id)
         {
@@ -124,9 +146,15 @@ namespace SubjectService.Service
             }    
         }
 
-       
-       
+
+
         //Lectures
+        #region
+        public List<Lectures> GetLectures(string id)
+        {
+            return _dbContext.lectures.Where(t => t.IdTopic == id).ToList();
+        }
+
         public async Task<string> AddLecture(Lectures lectures)
         {
            Random rd=new Random();
@@ -184,7 +212,19 @@ namespace SubjectService.Service
             }    
         }
 
+        #endregion
+
         //Resource
+        #region
+        public List<Resources> GetAllResources()
+        {
+            return _dbContext.Resources.ToList();
+        }
+        public List<Resources> GetResourcesForIdLectures(string idLec)
+        {
+            return _dbContext.Resources.Where(t=>t.IdLecture==idLec).ToList();
+        }
+
         public async Task<Resources> AddFileResource(IFormFile filedetail, string id)
         {
             var res = new Resources();
@@ -219,7 +259,6 @@ namespace SubjectService.Service
             await _dbContext.SaveChangesAsync();
             return res;
         }
-
         public Task<Resources> DetailResource(string id)
         {
             return _dbContext.Resources.Where(t => t.IdResources == id).FirstOrDefaultAsync();
@@ -237,11 +276,8 @@ namespace SubjectService.Service
                 _dbContext.SaveChanges();
             }
         }
+        #endregion
 
-        List<Resources> ISubjectService.GetResourceByName(string name)
-        {
-            throw new NotImplementedException();
-        }
         //Questions
         #region
         public List<Questions> GetAllQuestionForLectures(string idLec)
@@ -256,9 +292,20 @@ namespace SubjectService.Service
             return ques;
         }
 
-        public Task<Questions> AddQuestions(Questions ques)
+        public async Task<Questions> AddQuestions(Questions ques,string idClass,string idUser)
         {
-            throw new NotImplementedException();
+            Random rd = new Random();
+            ques.IdQuestions = "CH" + rd.Next(1, 9) + rd.Next(10, 99);
+            ques.DateCreate = DateTime.Now;
+            ques.Favorite = false;
+            var l = _dbContext.classAssignments.Where(t => t.IdClass == idClass).FirstOrDefault();
+            ques.IdPC = l.IdPC;
+            ques.IdUser = idUser;
+            _dbContext.Add(ques);
+            _dbContext.SaveChanges();
+            return ques;
+
+
         }
 
         public Task<Questions> EditQuestions(Questions ques)
@@ -266,7 +313,91 @@ namespace SubjectService.Service
             throw new NotImplementedException();
         }
 
-        public Task<bool> DeleteQuestion(string id)
+        public async Task<bool> DeleteQuestion(string id)
+        {
+            var ques = await _dbContext.questions.Where(t => t.IdQuestions == id).FirstOrDefaultAsync();
+            if (ques == null)
+                return false;
+            _dbContext.Remove(ques);
+            _dbContext.SaveChanges();
+            return true;
+        }
+
+
+        #endregion
+
+      
+        //Class
+        #region
+        public List<ClassSubject> GetAllClass()
+        {
+            return _dbContext.classSubjects.ToList();
+        }
+
+        public async Task<ClassSubject> AddClass(ClassSubject classSubject)
+        {
+            classSubject.IdClass = RandomId("LH");
+            _dbContext.Add(classSubject);
+            _dbContext.SaveChanges();
+            return  classSubject;
+        }
+
+        public Task<ClassSubject> EditClass(ClassSubject classSubject)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<bool> DeleteClass(string id)
+        {
+            var l =  _dbContext.classSubjects.SingleOrDefault(t => t.IdClass == id);
+            if (l != null)
+            {
+                _dbContext.Remove(l);
+                _dbContext.SaveChanges();
+                return true;
+            }
+            return false;
+        }
+
+        public void AddClassSubject(DetailClass detail)
+        {
+           _dbContext.Add(detail);
+            _dbContext.SaveChanges();
+        }
+
+        public void AddStudentToClass(string idStudent,string l)
+        {
+            var detai = new ClassList();
+            detai.IdStudent = idStudent;
+            detai.IdClass = l;
+            _dbContext.Add(detai);
+            _dbContext.SaveChanges();
+        }
+
+        public Task<ClassSubject> GetClass(string idClass)
+        {
+            return _dbContext.classSubjects.Where(t=>t.IdClass==idClass).FirstOrDefaultAsync();
+        }
+        public List<ClassSubject> GetAllClassForTeacher(string idTeacher, string idSubject)
+        {
+            List<DetailClass> list = _dbContext.detailClasses.Where(t => t.IdTeacher == idTeacher && t.IdSubject == idSubject).ToList();
+            List<ClassSubject> result = new List<ClassSubject>();
+            foreach (var item in list)
+            {
+                var detail = _dbContext.classSubjects.FirstOrDefault(t => t.IdClass == item.IdClass);
+                result.Add(detail);
+
+            }
+            return result;
+        }
+
+        public List<ClassList> ListStudent(string idClass)
+        {
+            return _dbContext.classLists.Where(t=>t.IdClass==idClass).ToList();
+        }
+
+        
+        public void AddStudentToClass()
         {
             throw new NotImplementedException();
         }

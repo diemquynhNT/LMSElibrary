@@ -50,14 +50,24 @@ namespace SubjectService.Controllers
 
             return File(videoFilePath, "video/mp4");
         }
-        [HttpGet("GetResourceByName")]
-        public async Task<IActionResult> GetResourceByName(string name)
+        //[HttpGet("GetResourceByName")]
+        //public async Task<IActionResult> GetResourceByName(string name)
+        //{
+        //    var res = _context.GetResourceByName(name);
+        //    if (res == null)
+        //        return BadRequest();
+        //    return Ok(res);
+
+        //}
+
+        [HttpGet("GetResourceByIdLectures")]
+        public async Task<IActionResult> GetResourceByIdLectures(string idLectures)
         {
-            var res = _context.GetResourceByName(name);
+            var res = _context.GetResourcesForIdLectures(idLectures);
             if (res == null)
                 return BadRequest();
             return Ok(res);
-           
+
         }
 
         [HttpPost("AddLectures")]

@@ -11,8 +11,26 @@ namespace SubjectService.Mapper
                 .ForMember(dest => dest.IdTopic, act => act.MapFrom(src => src.IdTopic))
                 .ForMember(dest => dest.Describe, act => act.MapFrom(src => src.Describe))
                 .ForMember(dest => dest.TitleLecture, act => act.MapFrom(src => src.TitleLecture));
-                  
+            CreateMap<QuestionModel, Questions>()
+                .ForMember(dest => dest.Title, act => act.MapFrom(src => src.Title))
+                .ForMember(dest => dest.ContentQuestion, act => act.MapFrom(src => src.ContentQuestion));
+            CreateMap<ClassModel, ClassSubject>()
+               .ForMember(dest => dest.NameClass, act => act.MapFrom(src => src.NameClass));
+            CreateMap<DetailClassModel, DetailClass>()
+                .ForMember(dest => dest.IdSubject, act => act.MapFrom(src => src.IdSubject))
+                .ForMember(dest => dest.IdClass, act => act.MapFrom(src => src.IdClass))
+              .ForMember(dest => dest.IdTeacher, act => act.MapFrom(src => src.IdTeacher));
+            CreateMap<SubjectModel, Subject>()
+                .ForMember(dest => dest.NameSubject, act => act.MapFrom(src => src.NameSubject))
+                .ForMember(dest => dest.Schoolyear, act => act.MapFrom(src => src.Schoolyear))
+              .ForMember(dest => dest.DescribeSubject, act => act.MapFrom(src => src.DescribeSubject))
+              .ForMember(dest => dest.StatusSubject, act => act.MapFrom(src => src.StatusSubject))
+              .ForMember(dest => dest.IdDepartment, act => act.MapFrom(src => src.IdDepartment));
+
+
         }
+
+
 
     }
 }
