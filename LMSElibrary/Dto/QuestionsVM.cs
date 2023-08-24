@@ -2,10 +2,14 @@
 
 namespace SubjectService.Dto
 {
-    public class QuestionModel
+    public class QuestionsVM
     {
+       
         public string Title { get; set; }
         public string ContentQuestion { get; set; }
-        public string? idClass { get; set; }
+        public string? IdUser { get; set; }
+        public DateTime DateCreate { get; set; }
+        public bool Favorite { get; set; }
+
     }
 }

@@ -18,12 +18,13 @@ namespace SubjectService.Service
 
         #endregion
 
-        public List<Topic> GetTopicsSubject(string id);
+
         //Topic
         #region
-        public Task AddTopic(string nametopic,string id);
-        public Task EditTopic(string nametopic, string id,string idtopic);
-        public void DeleteTopic(string id,string idtopic);
+        public List<Topic> GetTopicsSubject(string id);
+        public Task<Topic> AddTopic(string nametopic,string idSubject);
+        public Task<Topic> EditTopic(string nametopic, string idTopic);
+        public Task<bool> DeleteTopic(string id);
         #endregion
 
         //Lectures
@@ -44,13 +45,15 @@ namespace SubjectService.Service
         public List<Resources> GetVideo();
         public void DeleteResource(string id);
         public Task<Resources> AddFileResource(IFormFile filedetail, string id);
-        public Task PhanCongTL(IFormFile filedetail, string id);
+
+        public Task<ClassAssignment> PhanCongTL(string idClass,string idLectures);
+
         public Task DuyetTaiLieu(string id, bool check);
         #endregion
         // Question
         #region
-        public List<Questions> GetAllQuestionForLectures(string idLec);
-        public Task<Questions> AddQuestions(Questions ques, string idClass, string idUser);
+        public List<Questions> GetAllQuestionForLectures(string idLec, string idClass);
+        public Task<Questions> AddQuestions(Questions ques, string idClass, string idUser,string idLectures);
         public Task<Questions> EditQuestions(Questions ques);
         public Task<bool> DeleteQuestion(string id);
         #endregion
@@ -58,6 +61,7 @@ namespace SubjectService.Service
         //Class
         #region
         public List<ClassSubject> GetAllClass();
+        public List<ClassAssignment> GetAllPC();
         public Task<ClassSubject> GetClass(string idClass);
         public Task<ClassSubject> AddClass(ClassSubject classSubject);
         public Task<ClassSubject> EditClass(ClassSubject classSubject);

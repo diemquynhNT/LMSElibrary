@@ -26,6 +26,12 @@ namespace SubjectService.Mapper
               .ForMember(dest => dest.DescribeSubject, act => act.MapFrom(src => src.DescribeSubject))
               .ForMember(dest => dest.StatusSubject, act => act.MapFrom(src => src.StatusSubject))
               .ForMember(dest => dest.IdDepartment, act => act.MapFrom(src => src.IdDepartment));
+            CreateMap<Questions, QuestionsVM>()
+                .ForMember(dest => dest.Title, act => act.MapFrom(src => src.Title))
+                .ForMember(dest => dest.ContentQuestion, act => act.MapFrom(src => src.ContentQuestion))
+                 .ForMember(dest => dest.DateCreate, act => act.MapFrom(src => src.DateCreate))
+                  .ForMember(dest => dest.Favorite, act => act.MapFrom(src => src.Favorite))
+                   .ForMember(dest => dest.IdUser, act => act.MapFrom(src => src.IdUser));
 
 
         }

@@ -90,10 +90,7 @@ namespace SubjectService.Service
 
         #endregion
 
-        public List<Topic> GetTopicsSubject(string id)
-        {
-            return _dbContext.topics.Where(t => t.IdSubject == id).ToList();
-        }
+      
 
         public List<Resources> GetVideo()
         {
@@ -101,50 +98,52 @@ namespace SubjectService.Service
 
         }
 
+        //Topic
+        #region
+        public List<Topic> GetTopicsSubject(string id)
+        {
+            return _dbContext.topics.Where(t => t.IdSubject == id).ToList();
+        }
+        public async Task<Topic> AddTopic(string nametopic, string idSubject)
+        {
+            var tp = new Topic();
+            tp.IdTopic = RandomId("CD");
+            tp.TitleTopic = nametopic;
+            tp.IdSubject = idSubject;
+            _dbContext.topics.Add(tp);
+            await _dbContext.SaveChangesAsync();
+            return tp;
+
+        }
+
       
-        public async Task AddTopic(string nametopic, string id)
-        {
-                Random rd = new Random();
-                var tp = new Topic();
-                tp.IdTopic=Guid.NewGuid().ToString();
-                tp.TitleTopic = nametopic;
-                tp.IdSubject=id;
-                _dbContext.topics.Add(tp);
-                await _dbContext.SaveChangesAsync();
-            
-        }
 
-        public void DeleteLecture(string iddoc, string idtopic)
+        public async Task<bool> DeleteTopic(string id)
         {
-            var doc = _dbContext.lectures.SingleOrDefault(t => t.IdTopic == idtopic && t.IdLecture == iddoc);
-            if (doc != null)
-            {
-                _dbContext.Remove(doc);
-                _dbContext.SaveChanges();
-            }
-        }
-
-        public void DeleteTopic(string id, string idtopic)
-        {
-            var topic = _dbContext.topics.SingleOrDefault(t => t.IdTopic == idtopic &&t.IdSubject==id);
+            var topic = _dbContext.topics.SingleOrDefault(t => t.IdTopic == id) ;
             if (topic != null)
             {
                 _dbContext.Remove(topic);
                 _dbContext.SaveChanges();
+                return true;
             }
+            return false;
         }
 
 
-        public async Task EditTopic(string nametopic, string id, string idtopic)
+        public async Task<Topic> EditTopic(string nametopic, string idTopic)
         {
-           var tp=_dbContext.topics.Where(t=>t.IdTopic ==idtopic && t.IdSubject==id).FirstOrDefault();
-            if(nametopic!=null)
+            var tp = _dbContext.topics.Where(t => t.IdTopic == idTopic).FirstOrDefault();
+            if (nametopic != null)
             {
-                tp.TitleTopic=nametopic;
+                tp.TitleTopic = nametopic;
                 await _dbContext.SaveChangesAsync();
 
-            }    
+            }
+            return tp;
         }
+        #endregion
+
 
 
 
@@ -196,10 +195,25 @@ namespace SubjectService.Service
             await _dbContext.SaveChangesAsync();
             return res;
         }
-
-        public Task PhanCongTL(IFormFile filedetail, string id)
+        public void DeleteLecture(string iddoc, string idtopic)
         {
-            throw new NotImplementedException();
+            var doc = _dbContext.lectures.SingleOrDefault(t => t.IdTopic == idtopic && t.IdLecture == iddoc);
+            if (doc != null)
+            {
+                _dbContext.Remove(doc);
+                _dbContext.SaveChanges();
+            }
+        }
+
+        public async Task<ClassAssignment> PhanCongTL(string idClass, string idLectures)
+        {
+            var pc = new ClassAssignment();
+            pc.IdClass= idClass;
+            pc.IdLectures = idLectures;
+            pc.IdPC = RandomId("PC" + idClass + idLectures);
+            _dbContext.Add(pc);
+            _dbContext.SaveChanges();
+            return pc;
         }
 
         public async Task DuyetTaiLieu(string id,bool check)
@@ -280,9 +294,9 @@ namespace SubjectService.Service
 
         //Questions
         #region
-        public List<Questions> GetAllQuestionForLectures(string idLec)
+        public List<Questions> GetAllQuestionForLectures(string idLec,string idClass)
         {
-            List<ClassAssignment> list=_dbContext.classAssignments.Where(t=>t.IdLectures == idLec).ToList();
+            List<ClassAssignment> list=_dbContext.classAssignments.Where(t=>t.IdLectures == idLec && t.IdClass==idClass).ToList();
             List<Questions> ques = new List<Questions>();
             foreach(var item in list)
             {
@@ -292,13 +306,13 @@ namespace SubjectService.Service
             return ques;
         }
 
-        public async Task<Questions> AddQuestions(Questions ques,string idClass,string idUser)
+        public async Task<Questions> AddQuestions(Questions ques,string idClass,string idUser, string idLectures)
         {
             Random rd = new Random();
             ques.IdQuestions = "CH" + rd.Next(1, 9) + rd.Next(10, 99);
             ques.DateCreate = DateTime.Now;
             ques.Favorite = false;
-            var l = _dbContext.classAssignments.Where(t => t.IdClass == idClass).FirstOrDefault();
+            var l = _dbContext.classAssignments.Where(t => t.IdClass == idClass && t.IdLectures==idLectures).FirstOrDefault();
             ques.IdPC = l.IdPC;
             ques.IdUser = idUser;
             _dbContext.Add(ques);
@@ -332,6 +346,10 @@ namespace SubjectService.Service
         public List<ClassSubject> GetAllClass()
         {
             return _dbContext.classSubjects.ToList();
+        }
+        public List<ClassAssignment> GetAllPC()
+        {
+            return _dbContext.classAssignments.ToList();
         }
 
         public async Task<ClassSubject> AddClass(ClassSubject classSubject)

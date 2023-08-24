@@ -70,7 +70,7 @@ namespace SubjectService.Controllers
 
         }
 
-        [HttpPost("AddLectures")]
+        [HttpPost("AddLectureVideo")]
         public async Task<ActionResult> AddLectures([FromForm] LecturesModel lecturesModel,IFormFile videofile)
         {
             try
@@ -106,6 +106,29 @@ namespace SubjectService.Controllers
                 throw;
             }
 
+        }
+        [HttpPost("AddLectureVideoAndResource")]
+        public async Task<ActionResult> AddLectureVideoAndResource([FromForm] LecturesModel lecturesModel, IFormFile videofile,
+            List<IFormFile> files,string idClass)
+        {
+            try
+            {
+                var lec = _mapper.Map<Lectures>(lecturesModel);
+                string idLec = await _context.AddLecture(lec);
+                _context.AddLecturesVideo(videofile, idLec);
+                foreach (IFormFile postedFile in files)
+                {
+                    await _context.AddFileResource(postedFile, idLec);
+                }
+                //all lớp
+                _context.PhanCongTL(idClass, idLec);
+
+                return Ok("thanh cong");
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
         [HttpGet("GetVideo")]
         public List<Resources> GetVideo()

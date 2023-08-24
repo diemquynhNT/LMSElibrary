@@ -21,21 +21,26 @@ namespace SubjectService.Controllers
         }
 
         [HttpGet("ListAllQuestion")]
-        public List<Questions> ListAllSubject(string idLectures)
+        public List<QuestionsVM> ListAllQuestion(string idLectures, string idClass)
         {
-            return _context.GetAllQuestionForLectures(idLectures);
+            var list= _context.GetAllQuestionForLectures(idLectures, idClass);
+            List<QuestionsVM> listVM = new List<QuestionsVM>();
+            foreach(var question in list)
+            {
+                var ques = _mapper.Map<QuestionsVM>(question);
+                listVM.Add(ques);
+            }
+            return listVM;
            
         }
         [HttpPost("AddQuestions")]
-        public async Task<ActionResult> AddLectures(List<string> idClass, string idUser ,[FromForm] QuestionModel questionModel)
+        public async Task<ActionResult> AddQuestions(string idLectures,string idUser ,[FromForm] QuestionModel questionModel)
         {
             try
             {
                 var questions = _mapper.Map<Questions>(questionModel);
-                foreach(var item in idClass)
-                {
-                    await _context.AddQuestions(questions, item, idUser);
-                }
+               await _context.AddQuestions(questions, questionModel.idClass, idUser,idLectures);
+                
                
                 return Ok("thanh cong");
             }

@@ -27,12 +27,12 @@ namespace SubjectService.Controllers
         }
 
         [HttpPost("AddTopic")]
-        public async Task<ActionResult> AddTopic([FromForm] string name, [FromForm] string id)
+        public async Task<ActionResult> AddTopic([FromForm] string idSubject, [FromForm] string title)
         {
 
             try
             {
-                await isp.AddTopic(name, id);
+                await isp.AddTopic(title, idSubject);
                 return Ok();
             }
             catch (Exception)
@@ -42,13 +42,13 @@ namespace SubjectService.Controllers
         }
 
         [HttpPost("EditTopic")]
-        public async Task<ActionResult> EditTopic([FromForm] string name, string id, string idtopic)
+        public async Task<ActionResult> EditTopic(string idTopic, [FromForm] string title)
         {
 
 
             try
             {
-                await isp.EditTopic(name, id, idtopic);
+                await isp.EditTopic(title,idTopic);
                 return Ok();
             }
             catch (Exception)
@@ -58,13 +58,14 @@ namespace SubjectService.Controllers
         }
 
         [HttpDelete("delete")]
-        public IActionResult DeleteTopic(string id, string idtopic)
+        public async Task<ActionResult> DeleteTopic(string id, string idtopic)
         {
             try
             {
-                isp.DeleteTopic(id,idtopic);
+                var check= await isp.DeleteTopic(idtopic);
+                if (!check)
+                    return BadRequest();
                 return Ok();
-
 
             }
             catch
