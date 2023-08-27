@@ -7,6 +7,6 @@ namespace NotificationService.Dto
      
         public string ContentNotification { get; set; }
         public string TitleNotification { get; set; }
-        public string? Idreceiver { get; set; }
+        public List<string> Idreceiver { get; set; }
     }
 }

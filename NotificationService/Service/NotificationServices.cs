@@ -13,7 +13,7 @@ namespace NotificationService.Service
             this._context = context;
         }
 
-        public async Task<Notifications> AddNotification(Notifications noti, string idSubject, string idClass,string idSender)
+        public async Task<Notifications> AddNotification(Notifications noti, string idSubject, string idClass,string idSender,string Idreceiver)
         {
             Random rd=new Random();
             noti.IdNotification="TB"+rd.Next(1,9)+rd.Next(10,99);
@@ -22,6 +22,7 @@ namespace NotificationService.Service
             noti.IdClass=idClass;
             noti.IdSender = idSender;
             noti.Status = false;
+            noti.Idreceiver = Idreceiver;
             _context.notifications.Add(noti);
             _context.SaveChanges();
             return noti;

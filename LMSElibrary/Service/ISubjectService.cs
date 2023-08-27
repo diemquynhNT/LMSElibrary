@@ -62,8 +62,10 @@ namespace SubjectService.Service
         #region
         public List<ClassSubject> GetAllClass();
         public List<ClassAssignment> GetAllPC();
+        public List<DetailClass> GetAllClassForSubject(string idSubject);
         public Task<ClassSubject> GetClass(string idClass);
         public Task<ClassSubject> AddClass(ClassSubject classSubject);
+        public Task<DetailClass> AddDetailClassSubject(string idSubject, string idClass);
         public Task<ClassSubject> EditClass(ClassSubject classSubject);
         public Task<bool> DeleteClass(string id);
         public List<ClassList> ListStudent(string idClass);

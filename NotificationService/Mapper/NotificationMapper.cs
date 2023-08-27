@@ -9,8 +9,8 @@ namespace NotificationService.Mapper
         public NotificationMapper() {
             CreateMap<NotificationModel, Notifications>()
              .ForMember(dest => dest.ContentNotification, act => act.MapFrom(src => src.ContentNotification))
-             .ForMember(dest => dest.TitleNotification, act => act.MapFrom(src => src.TitleNotification))
-             .ForMember(dest => dest.Idreceiver, act => act.MapFrom(src => src.Idreceiver));
+             .ForMember(dest => dest.TitleNotification, act => act.MapFrom(src => src.TitleNotification));
+             //.ForMember(dest => dest.Idreceiver, act => act.MapFrom(src => src.Idreceiver));
 
 
 

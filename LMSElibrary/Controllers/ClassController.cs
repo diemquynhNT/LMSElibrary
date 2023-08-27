@@ -35,6 +35,13 @@ namespace SubjectService.Controllers
             return list;
 
         }
+        [HttpGet("ListAllClassForSubject")]
+        public List<DetailClass> ListAllClassForSubject(string idSubject)
+        {
+            var list = _context.GetAllClassForSubject(idSubject);
+            return list;
+
+        }
 
         //[HttpGet("GetDetailSubject")]
         //public async Task<ActionResult> GetSubjectByIdAsync(string Id)
@@ -61,6 +68,21 @@ namespace SubjectService.Controllers
             }
         }
 
+        [HttpPost("AddDetailClass")]
+        public async Task<ActionResult> AddDetailClass([FromForm] string idSubject, [FromForm] string idClass)
+        {
+
+            try
+            {
+                
+                await _context.AddDetailClassSubject(idSubject,idClass);
+                return Ok("da them mon hoc cho lop");
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
 
         [HttpPut("UpdateClass")]
         public async Task<IActionResult> UpdateClass(string id, [FromBody] ClassModel classModel)

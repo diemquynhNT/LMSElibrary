@@ -30,13 +30,18 @@ namespace NotificationService.Controllers
         }
 
         [HttpPost("AddNotification")]
-        public async Task<ActionResult> AddNotification([FromForm] NotificationModel notificationModel,string idSubject,string idClass, string idSender)
+        public async Task<ActionResult> AddNotification([FromForm] NotificationModel notificationModel,
+            string idSubject,string idClass, string idSender)
         {
 
             try
             {
                 var noti = _mapper.Map<Notifications>(notificationModel);
-                await _context.AddNotification(noti,idSubject,idClass,idSender);
+                foreach(var notification in notificationModel.Idreceiver)
+                {
+                    await _context.AddNotification(noti, idSubject, idClass, idSender,notification);
+                }
+                
                 return Ok("da them thong bao");
             }
             catch (Exception)

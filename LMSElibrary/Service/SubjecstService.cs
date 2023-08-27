@@ -351,6 +351,10 @@ namespace SubjectService.Service
         {
             return _dbContext.classAssignments.ToList();
         }
+        public List<DetailClass> GetAllClassForSubject(string idSubject)
+        {
+            return _dbContext.detailClasses.Where(t=>t.IdSubject==idSubject).ToList();
+        }
 
         public async Task<ClassSubject> AddClass(ClassSubject classSubject)
         {
@@ -358,6 +362,16 @@ namespace SubjectService.Service
             _dbContext.Add(classSubject);
             _dbContext.SaveChanges();
             return  classSubject;
+        }
+
+        public async Task<DetailClass> AddDetailClassSubject(string idSubject,string idClass)
+        {
+            var detail = new DetailClass();
+            detail.IdSubject = idSubject;
+            detail.IdClass = idClass;
+            _dbContext.Add(detail);
+            _dbContext.SaveChanges();
+            return detail;
         }
 
         public Task<ClassSubject> EditClass(ClassSubject classSubject)
