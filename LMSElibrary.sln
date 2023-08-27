@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.6.33829.357
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SubjectService", "LMSElibrary\SubjectService.csproj", "{1A4DC0EF-BCDD-43BD-882C-02C320831F63}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SubjectsService", "LMSElibrary\SubjectsService.csproj", "{1A4DC0EF-BCDD-43BD-882C-02C320831F63}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UserService", "User\UserService.csproj", "{B364483E-E761-491A-A1CC-B4F867D799CA}"
 EndProject
@@ -11,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExamService", "Exam\ExamSer
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PersonalfilesService", "PersonalfilesService\PersonalfilesService.csproj", "{36460EEF-E7BA-4D0A-B5F9-A6076E0ACC7E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NotificationService", "NotificationService\NotificationService.csproj", "{17C7627E-DB1D-4EAC-87D7-B363EE2BD7D0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NotificationService", "NotificationService\NotificationService.csproj", "{17C7627E-DB1D-4EAC-87D7-B363EE2BD7D0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
