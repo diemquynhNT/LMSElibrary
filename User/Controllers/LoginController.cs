@@ -22,7 +22,7 @@ namespace UserService.Controllers
         {
             try
             {
-                var user = iuser.LoginUser(model.Username, model.Password);
+                var user = iuser.LoginUser(model);
                 if (user == null)
                 {
                     return Ok(new

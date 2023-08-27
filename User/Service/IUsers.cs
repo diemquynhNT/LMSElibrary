@@ -21,7 +21,7 @@ namespace UserService.Service
         public bool ChangePassword(string userId, UserPasswordVM us);
         public bool ValidatePassword(string password);
         public bool IsValidUser(string id);
-        public Users LoginUser(string username, string password);
+        public Users LoginUser(LoginModel login);
         public string GetToken(Users user);
 
         //pos

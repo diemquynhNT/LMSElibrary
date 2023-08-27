@@ -167,10 +167,22 @@ namespace UserService.Service
             }
             
         }
-
-        public Users LoginUser(string username, string password)
+        public string RoleUserCheck(int id)
         {
-            Users user = _context.users.SingleOrDefault(u => u.Username == username && u.Password == password);
+            string res="Admin";
+            if (id == 2)
+                res = "GV";
+            else if (id == 3)
+                res = "SV";
+            return res;
+
+        }
+
+        public Users LoginUser(LoginModel login)
+        {
+            
+            Users user = _context.users.SingleOrDefault(u => u.Username == login.Username
+            && u.Password == login.Password && u.IdPos==login.RoleUsers.ToString());
 
             if (user == null)
                 return null;
