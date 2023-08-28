@@ -21,7 +21,7 @@ namespace ExamService.Services
         public string AddExam(string idteacher, string status, Exams exams)
         {
             Random rd = new Random();
-            exams.IdExam = "DT" + rd.Next(1, 9) + rd.Next(2, 99);
+            exams.IdExam = "DT" + rd.Next(1, 9) + rd.Next(10, 99);
             exams.IdTeacher = idteacher;
             exams.StatusExam = status;
             //true trắc nghiệm

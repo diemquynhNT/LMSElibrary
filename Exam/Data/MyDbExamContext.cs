@@ -11,7 +11,7 @@ namespace ExamService.Data
         public DbSet<DetailExam> detailExams { get; set; }
         public DbSet<Exams> exams { get; set; }
         public DbSet<Questions> questions { get; set; }
-        public DbSet<demo> demos { get; set; }
+        
 
         #endregion
 

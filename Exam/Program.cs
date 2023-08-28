@@ -2,7 +2,6 @@ using AutoMapper;
 using ExamService.Data;
 using ExamService.Services;
 using Microsoft.EntityFrameworkCore;
-
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<MyDbExamContext>(options =>
 {

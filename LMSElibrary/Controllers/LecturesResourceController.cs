@@ -75,6 +75,10 @@ namespace SubjectService.Controllers
         {
             try
             {
+                if (videofile.ContentType != "video/mp4")
+                {
+                    return BadRequest("Invalid file type");
+                }
                 var lec = _mapper.Map<Lectures>(lecturesModel);
                 string idLec=await _context.AddLecture(lec);
                 _context.AddLecturesVideo(videofile, idLec);
